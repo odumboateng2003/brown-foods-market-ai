@@ -99,9 +99,17 @@ export function SiteHeader() {
               <DropdownMenuContent align="end" className="w-56">
                 <DropdownMenuLabel className="truncate">{user.email}</DropdownMenuLabel>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={() => navigate({ to: "/cart" })}>
-                  <ShoppingCart className="mr-2 h-4 w-4" /> My Cart
+                <DropdownMenuItem onClick={() => navigate({ to: "/orders" })}>
+                  <Package className="mr-2 h-4 w-4" /> My orders
                 </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => navigate({ to: "/cart" })}>
+                  <ShoppingCart className="mr-2 h-4 w-4" /> My cart
+                </DropdownMenuItem>
+                {isAdmin && (
+                  <DropdownMenuItem onClick={() => navigate({ to: "/admin" })}>
+                    <LayoutDashboard className="mr-2 h-4 w-4" /> Admin
+                  </DropdownMenuItem>
+                )}
                 <DropdownMenuItem
                   onClick={async () => {
                     await supabase.auth.signOut();
