@@ -1,9 +1,10 @@
 import { Link, useNavigate } from "@tanstack/react-router";
-import { ShoppingCart, Search, User as UserIcon, LogOut, Menu } from "lucide-react";
+import { ShoppingCart, Search, User as UserIcon, LogOut, Menu, Package, LayoutDashboard } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useAuth } from "@/hooks/use-auth";
+import { useRoles } from "@/hooks/use-role";
 import { supabase } from "@/integrations/supabase/client";
 import {
   DropdownMenu,
