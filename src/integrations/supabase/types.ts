@@ -73,6 +73,142 @@ export type Database = {
         }
         Relationships: []
       }
+      order_items: {
+        Row: {
+          created_at: string
+          id: string
+          order_id: string
+          product_id: string | null
+          product_name: string
+          quantity: number
+          unit_price_ghs: number
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          order_id: string
+          product_id?: string | null
+          product_name: string
+          quantity: number
+          unit_price_ghs: number
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          order_id?: string
+          product_id?: string | null
+          product_name?: string
+          quantity?: number
+          unit_price_ghs?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "order_items_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      orders: {
+        Row: {
+          address: string
+          city: string
+          created_at: string
+          delivery_fee_ghs: number
+          full_name: string
+          id: string
+          notes: string | null
+          payment_status: Database["public"]["Enums"]["payment_status"]
+          phone: string
+          region: string
+          status: Database["public"]["Enums"]["order_status"]
+          subtotal_ghs: number
+          total_ghs: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          address: string
+          city: string
+          created_at?: string
+          delivery_fee_ghs?: number
+          full_name: string
+          id?: string
+          notes?: string | null
+          payment_status?: Database["public"]["Enums"]["payment_status"]
+          phone: string
+          region: string
+          status?: Database["public"]["Enums"]["order_status"]
+          subtotal_ghs?: number
+          total_ghs?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          address?: string
+          city?: string
+          created_at?: string
+          delivery_fee_ghs?: number
+          full_name?: string
+          id?: string
+          notes?: string | null
+          payment_status?: Database["public"]["Enums"]["payment_status"]
+          phone?: string
+          region?: string
+          status?: Database["public"]["Enums"]["order_status"]
+          subtotal_ghs?: number
+          total_ghs?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      payments: {
+        Row: {
+          amount_ghs: number
+          created_at: string
+          id: string
+          order_id: string
+          phone: string
+          provider: Database["public"]["Enums"]["momo_provider"]
+          reference: string
+          status: Database["public"]["Enums"]["payment_status"]
+          updated_at: string
+        }
+        Insert: {
+          amount_ghs: number
+          created_at?: string
+          id?: string
+          order_id: string
+          phone: string
+          provider: Database["public"]["Enums"]["momo_provider"]
+          reference: string
+          status?: Database["public"]["Enums"]["payment_status"]
+          updated_at?: string
+        }
+        Update: {
+          amount_ghs?: number
+          created_at?: string
+          id?: string
+          order_id?: string
+          phone?: string
+          provider?: Database["public"]["Enums"]["momo_provider"]
+          reference?: string
+          status?: Database["public"]["Enums"]["payment_status"]
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "payments_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       products: {
         Row: {
           category_id: string | null
@@ -147,15 +283,51 @@ export type Database = {
         }
         Relationships: []
       }
+      user_roles: {
+        Row: {
+          created_at: string
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
     }
     Enums: {
-      [_ in never]: never
+      app_role: "admin" | "staff" | "customer"
+      momo_provider: "mtn" | "telecel" | "airteltigo"
+      order_status:
+        | "pending"
+        | "confirmed"
+        | "processing"
+        | "out_for_delivery"
+        | "delivered"
+        | "cancelled"
+      payment_status: "pending" | "processing" | "paid" | "failed" | "refunded"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -282,6 +454,18 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: ["admin", "staff", "customer"],
+      momo_provider: ["mtn", "telecel", "airteltigo"],
+      order_status: [
+        "pending",
+        "confirmed",
+        "processing",
+        "out_for_delivery",
+        "delivered",
+        "cancelled",
+      ],
+      payment_status: ["pending", "processing", "paid", "failed", "refunded"],
+    },
   },
 } as const
