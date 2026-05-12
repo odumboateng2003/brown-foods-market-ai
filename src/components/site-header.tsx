@@ -17,6 +17,7 @@ import {
 
 export function SiteHeader() {
   const { user } = useAuth();
+  const { isAdmin } = useRoles();
   const navigate = useNavigate();
   const [q, setQ] = useState("");
   const [count, setCount] = useState(0);
