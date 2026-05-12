@@ -137,8 +137,8 @@ function CartPage() {
               <dd className="font-display text-xl font-bold">{formatGHS(total)}</dd>
             </div>
           </dl>
-          <Button size="lg" variant="hero" className="mt-6 w-full" onClick={() => toast("Checkout coming soon — Mobile Money & cards next!")}>
-            Proceed to checkout
+          <Button asChild size="lg" variant="hero" className="mt-6 w-full">
+            <Link to="/checkout">Proceed to checkout</Link>
           </Button>
           <p className="mt-3 text-center text-xs text-muted-foreground">Mobile Money, cards & cash on delivery</p>
         </aside>
