@@ -12,10 +12,10 @@ export const Route = createFileRoute("/admin")({
 
 const NAV = [
   { to: "/admin", label: "Overview", icon: LayoutDashboard, exact: true },
-  { to: "/admin/products", label: "Products", icon: Package },
-  { to: "/admin/categories", label: "Categories", icon: Tag },
-  { to: "/admin/orders", label: "Orders", icon: ShoppingBag },
-  { to: "/admin/users", label: "Users", icon: Users },
+  { to: "/admin/products", label: "Products", icon: Package, exact: false },
+  { to: "/admin/categories", label: "Categories", icon: Tag, exact: false },
+  { to: "/admin/orders", label: "Orders", icon: ShoppingBag, exact: false },
+  { to: "/admin/users", label: "Users", icon: Users, exact: false },
 ] as const;
 
 function AdminLayout() {
