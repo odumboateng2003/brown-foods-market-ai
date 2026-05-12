@@ -1,9 +1,10 @@
 import { Link, useNavigate } from "@tanstack/react-router";
-import { ShoppingCart, Search, User as UserIcon, LogOut, Menu } from "lucide-react";
+import { ShoppingCart, Search, User as UserIcon, LogOut, Menu, Package, LayoutDashboard } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useAuth } from "@/hooks/use-auth";
+import { useRoles } from "@/hooks/use-role";
 import { supabase } from "@/integrations/supabase/client";
 import {
   DropdownMenu,
@@ -16,6 +17,7 @@ import {
 
 export function SiteHeader() {
   const { user } = useAuth();
+  const { isAdmin } = useRoles();
   const navigate = useNavigate();
   const [q, setQ] = useState("");
   const [count, setCount] = useState(0);
@@ -97,9 +99,17 @@ export function SiteHeader() {
               <DropdownMenuContent align="end" className="w-56">
                 <DropdownMenuLabel className="truncate">{user.email}</DropdownMenuLabel>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={() => navigate({ to: "/cart" })}>
-                  <ShoppingCart className="mr-2 h-4 w-4" /> My Cart
+                <DropdownMenuItem onClick={() => navigate({ to: "/orders" })}>
+                  <Package className="mr-2 h-4 w-4" /> My orders
                 </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => navigate({ to: "/cart" })}>
+                  <ShoppingCart className="mr-2 h-4 w-4" /> My cart
+                </DropdownMenuItem>
+                {isAdmin && (
+                  <DropdownMenuItem onClick={() => navigate({ to: "/admin" })}>
+                    <LayoutDashboard className="mr-2 h-4 w-4" /> Admin
+                  </DropdownMenuItem>
+                )}
                 <DropdownMenuItem
                   onClick={async () => {
                     await supabase.auth.signOut();
