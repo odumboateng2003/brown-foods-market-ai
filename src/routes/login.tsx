@@ -31,21 +31,30 @@ function LoginPage() {
     setBusy(true);
     try {
       if (mode === "signup") {
-        const { error } = await supabase.auth.signUp({
+        const { data, error } = await supabase.auth.signUp({
           email,
           password,
           options: {
-            emailRedirectTo: window.location.origin,
+            emailRedirectTo: `${window.location.origin}/`,
             data: { full_name: name },
           },
         });
         if (error) throw error;
-        toast.success("Check your email to confirm your account");
+        if (data.user && !data.session) {
+          toast.success("Account created — check your email to verify before signing in.");
+        } else {
+          toast.success("Account created!");
+        }
       } else {
         const { error } = await supabase.auth.signInWithPassword({ email, password });
-        if (error) throw error;
-        toast.success("Welcome back!");
-        navigate({ to: "/" });
+        if (error) {
+          if (/confirm/i.test(error.message) || /verified/i.test(error.message)) {
+            toast.error("Please verify your email first. Check your inbox for the confirmation link.");
+          } else throw error;
+        } else {
+          toast.success("Welcome back!");
+          navigate({ to: "/" });
+        }
       }
     } catch (err) {
       toast.error((err as Error).message);
