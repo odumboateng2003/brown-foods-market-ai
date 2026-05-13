@@ -119,6 +119,13 @@ function LoginPage() {
           <Button type="submit" disabled={busy} variant="hero" size="lg" className="w-full">
             {busy ? "Please wait…" : mode === "signin" ? "Sign in" : "Create account"}
           </Button>
+          {mode === "signin" && (
+            <div className="text-right">
+              <Link to="/forgot-password" className="text-xs font-medium text-spice hover:underline">
+                Forgot password?
+              </Link>
+            </div>
+          )}
         </form>
 
         <p className="mt-6 text-center text-sm text-muted-foreground">
