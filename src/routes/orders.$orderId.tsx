@@ -1,6 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { useEffect, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { CheckCircle2, Clock, Package, Truck, XCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
@@ -24,8 +23,6 @@ const STATUS_STEPS = [
 function OrderPage() {
   const { orderId } = Route.useParams();
   const { user, loading } = useAuth();
-  const qc = useQueryClient();
-  const [simulated, setSimulated] = useState(false);
 
   const { data } = useQuery({
     enabled: !!user,
@@ -44,21 +41,6 @@ function OrderPage() {
     },
     refetchInterval: 4000,
   });
-
-  // Simulated MoMo confirmation after 6 seconds (demo). Real integration would use webhooks.
-  useEffect(() => {
-    if (simulated || !data?.order) return;
-    if (data.order.payment_status !== "pending" && data.order.payment_status !== "processing") return;
-    const t = setTimeout(async () => {
-      await supabase
-        .from("orders")
-        .update({ payment_status: "paid", status: "confirmed" })
-        .eq("id", orderId);
-      qc.invalidateQueries({ queryKey: ["order", orderId] });
-      setSimulated(true);
-    }, 6000);
-    return () => clearTimeout(t);
-  }, [data?.order, orderId, qc, simulated]);
 
   if (loading || !data?.order) return <div className="p-20 text-center text-muted-foreground">Loading order…</div>;
 

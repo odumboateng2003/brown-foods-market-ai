@@ -165,6 +165,36 @@ export type Database = {
         }
         Relationships: []
       }
+      payment_webhook_events: {
+        Row: {
+          event_id: string | null
+          id: string
+          payload: Json
+          provider: Database["public"]["Enums"]["momo_provider"]
+          received_at: string
+          reference: string | null
+          status: string
+        }
+        Insert: {
+          event_id?: string | null
+          id?: string
+          payload: Json
+          provider: Database["public"]["Enums"]["momo_provider"]
+          received_at?: string
+          reference?: string | null
+          status: string
+        }
+        Update: {
+          event_id?: string | null
+          id?: string
+          payload?: Json
+          provider?: Database["public"]["Enums"]["momo_provider"]
+          received_at?: string
+          reference?: string | null
+          status?: string
+        }
+        Relationships: []
+      }
       payments: {
         Row: {
           amount_ghs: number

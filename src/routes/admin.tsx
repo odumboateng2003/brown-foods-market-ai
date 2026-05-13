@@ -33,6 +33,17 @@ function AdminLayout() {
     return <div className="p-20 text-center text-muted-foreground">Loading admin…</div>;
   }
   if (!user) return null;
+  if (!user.email_confirmed_at) {
+    return (
+      <div className="mx-auto max-w-md px-4 py-20 text-center">
+        <h1 className="font-display text-2xl font-bold">Verify your email</h1>
+        <p className="mt-2 text-muted-foreground">Confirm your email address to access the admin dashboard.</p>
+        <Link to="/" className="mt-6 inline-flex items-center gap-2 text-spice hover:underline">
+          <ArrowLeft className="h-4 w-4" /> Back to home
+        </Link>
+      </div>
+    );
+  }
   if (!isAdmin) {
     return (
       <div className="mx-auto max-w-md px-4 py-20 text-center">
