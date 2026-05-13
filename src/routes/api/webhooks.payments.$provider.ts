@@ -87,9 +87,12 @@ export const Route = createFileRoute("/api/webhooks/payments/$provider")({
 
         if (payErr || !payment) return new Response("Reference not found", { status: 404 });
 
-        const orderUpdate: Record<string, unknown> = { payment_status: paymentStatus, updated_at: new Date().toISOString() };
-        if (orderStatus) orderUpdate.status = orderStatus;
-        await supabaseAdmin.from("orders").update(orderUpdate).eq("id", payment.order_id);
+        const nowIso = new Date().toISOString();
+        if (orderStatus) {
+          await supabaseAdmin.from("orders").update({ payment_status: paymentStatus, status: orderStatus, updated_at: nowIso }).eq("id", payment.order_id);
+        } else {
+          await supabaseAdmin.from("orders").update({ payment_status: paymentStatus, updated_at: nowIso }).eq("id", payment.order_id);
+        }
 
         return Response.json({ ok: true, reference, status: paymentStatus });
       },
