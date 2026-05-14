@@ -11,6 +11,7 @@ import { Toaster } from "@/components/ui/sonner";
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
 import { ChatWidget } from "@/components/chat-widget";
+import { DevBanner } from "@/components/dev-banner";
 
 import appCss from "../styles.css?url";
 
@@ -106,6 +107,7 @@ function RootComponent() {
   return (
     <QueryClientProvider client={queryClient}>
       <div className="flex min-h-screen flex-col">
+        <DevBanner />
         <SiteHeader />
         <main className="flex-1"><Outlet /></main>
         <SiteFooter />
