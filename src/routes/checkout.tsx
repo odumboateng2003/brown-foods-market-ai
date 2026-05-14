@@ -181,9 +181,12 @@ function CheckoutPage() {
               <dd className="font-display text-xl font-bold">{formatGHS(total)}</dd>
             </div>
           </dl>
-          <Button type="submit" size="lg" variant="hero" className="mt-6 w-full" disabled={submitting}>
-            {submitting ? "Placing order…" : `Pay ${formatGHS(total)}`}
+          <Button type="submit" size="lg" variant="hero" className="mt-6 w-full" disabled>
+            Payments unavailable (dev mode)
           </Button>
+          <p className="mt-2 text-center text-xs text-muted-foreground">
+            Live checkout will be enabled by the admin before launch.
+          </p>
         </aside>
       </form>
     </div>

@@ -13,18 +13,25 @@ export function SiteFooter() {
             <p className="mt-4 max-w-md text-sm text-muted-foreground">
               Authentic Ghanaian foodstuffs, delivered to your door. From Pona yam to scotch bonnet — sourced from trusted local farmers.
             </p>
+            <p className="mt-4 max-w-md text-xs text-amber-700">
+              Platform under development. Live payments are temporarily unavailable.
+            </p>
           </div>
           <div>
             <h4 className="mb-3 text-sm font-semibold">Shop</h4>
             <ul className="space-y-2 text-sm text-muted-foreground">
               <li><Link to="/shop" className="hover:text-foreground">All products</Link></li>
-              <li><Link to="/shop" className="hover:text-foreground">Categories</Link></li>
               <li><Link to="/cart" className="hover:text-foreground">Cart</Link></li>
+              <li><Link to="/orders" className="hover:text-foreground">My orders</Link></li>
             </ul>
           </div>
           <div>
-            <h4 className="mb-3 text-sm font-semibold">Account</h4>
+            <h4 className="mb-3 text-sm font-semibold">Company</h4>
             <ul className="space-y-2 text-sm text-muted-foreground">
+              <li><Link to="/about" className="hover:text-foreground">About us</Link></li>
+              <li><Link to="/contact" className="hover:text-foreground">Contact</Link></li>
+              <li><Link to="/privacy" className="hover:text-foreground">Privacy Policy</Link></li>
+              <li><Link to="/terms" className="hover:text-foreground">Terms &amp; Conditions</Link></li>
               <li><Link to="/login" className="hover:text-foreground">Sign in</Link></li>
             </ul>
           </div>
