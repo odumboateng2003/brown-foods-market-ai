@@ -38,7 +38,6 @@ function CheckoutPage() {
   const { user, loading } = useAuth();
   const navigate = useNavigate();
   const [provider, setProvider] = useState<Provider>("mtn");
-  const [submitting, setSubmitting] = useState(false);
 
   const { data: items } = useQuery({
     enabled: !!user,
