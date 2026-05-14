@@ -106,9 +106,14 @@ export function SiteHeader() {
                   <ShoppingCart className="mr-2 h-4 w-4" /> My cart
                 </DropdownMenuItem>
                 {isAdmin && (
-                  <DropdownMenuItem onClick={() => navigate({ to: "/admin" })}>
-                    <LayoutDashboard className="mr-2 h-4 w-4" /> Admin
-                  </DropdownMenuItem>
+                  <>
+                    <DropdownMenuItem onClick={() => navigate({ to: "/admin/dashboard" })}>
+                      <LayoutDashboard className="mr-2 h-4 w-4" /> Admin Dashboard
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => navigate({ to: "/admin" })}>
+                      <LayoutDashboard className="mr-2 h-4 w-4" /> Admin Home
+                    </DropdownMenuItem>
+                  </>
                 )}
                 <DropdownMenuItem
                   onClick={async () => {
