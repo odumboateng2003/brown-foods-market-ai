@@ -38,7 +38,6 @@ function CheckoutPage() {
   const { user, loading } = useAuth();
   const navigate = useNavigate();
   const [provider, setProvider] = useState<Provider>("mtn");
-  const [submitting, setSubmitting] = useState(false);
 
   const { data: items } = useQuery({
     enabled: !!user,
@@ -77,7 +76,7 @@ function CheckoutPage() {
     );
   }
 
-  const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const fd = new FormData(e.currentTarget);
     const parsed = schema.safeParse(Object.fromEntries(fd));
@@ -85,65 +84,16 @@ function CheckoutPage() {
       toast.error(parsed.error.issues[0]?.message ?? "Please check the form");
       return;
     }
-    setSubmitting(true);
-
-    const { data: order, error } = await supabase
-      .from("orders")
-      .insert({
-        user_id: user.id,
-        full_name: parsed.data.full_name,
-        phone: parsed.data.phone,
-        address: parsed.data.address,
-        city: parsed.data.city,
-        region: parsed.data.region,
-        notes: parsed.data.notes || null,
-        subtotal_ghs: subtotal,
-        delivery_fee_ghs: delivery,
-        total_ghs: total,
-      })
-      .select()
-      .single();
-
-    if (error || !order) {
-      setSubmitting(false);
-      toast.error(error?.message ?? "Could not create order");
-      return;
-    }
-
-    const lineItems = items
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      .filter((i: any) => i.product)
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      .map((i: any) => ({
-        order_id: order.id,
-        product_id: i.product.id,
-        product_name: i.product.name,
-        unit_price_ghs: i.product.price_ghs,
-        quantity: i.quantity,
-      }));
-    await supabase.from("order_items").insert(lineItems);
-
-    const reference = `BFM-${order.id.slice(0, 8).toUpperCase()}`;
-    await supabase.from("payments").insert({
-      order_id: order.id,
-      provider,
-      phone: parsed.data.momo_phone,
-      amount_ghs: total,
-      reference,
-      status: "processing",
-    });
-
-    // Simulate provider STK push: clear cart, navigate to confirmation
-    await supabase.from("cart_items").delete().eq("user_id", user.id);
-
-    toast.success("Order placed! Check your phone to authorize payment.");
-    navigate({ to: "/orders/$orderId", params: { orderId: order.id } });
-    setSubmitting(false);
+    toast.info("Payments are currently unavailable while the platform is under development.");
   };
 
   return (
     <div className="mx-auto max-w-6xl px-4 py-10">
-      <h1 className="mb-8 font-display text-3xl font-bold md:text-4xl">Checkout</h1>
+      <h1 className="mb-2 font-display text-3xl font-bold md:text-4xl">Checkout</h1>
+      <div className="mb-6 rounded-xl border border-amber-300 bg-amber-50 px-4 py-3 text-sm text-amber-900">
+        <strong>Payments are currently unavailable</strong> while the platform is under
+        development. You can browse the checkout flow, but no real Mobile Money charges will be made.
+      </div>
       <form onSubmit={onSubmit} className="grid gap-8 lg:grid-cols-[1fr_360px]">
         <div className="space-y-6">
           <section className="rounded-2xl border border-border bg-card p-6 shadow-card">
@@ -230,9 +180,12 @@ function CheckoutPage() {
               <dd className="font-display text-xl font-bold">{formatGHS(total)}</dd>
             </div>
           </dl>
-          <Button type="submit" size="lg" variant="hero" className="mt-6 w-full" disabled={submitting}>
-            {submitting ? "Placing order…" : `Pay ${formatGHS(total)}`}
+          <Button type="submit" size="lg" variant="hero" className="mt-6 w-full" disabled>
+            Payments unavailable (dev mode)
           </Button>
+          <p className="mt-2 text-center text-xs text-muted-foreground">
+            Live checkout will be enabled by the admin before launch.
+          </p>
         </aside>
       </form>
     </div>
