@@ -11,7 +11,7 @@ import {
 import { supabase } from "@/integrations/supabase/client";
 import { formatGHS } from "@/lib/format";
 
-export const Route = createFileRoute("/admin/")({ component: AdminOverview });
+export const Route = createFileRoute("/admin/dashboard")({ component: AdminOverview });
 
 const LOW_STOCK_THRESHOLD = 5;
 
