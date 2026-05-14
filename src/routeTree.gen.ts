@@ -26,7 +26,6 @@ import { Route as AdminUsersRouteImport } from './routes/admin.users'
 import { Route as AdminProductsRouteImport } from './routes/admin.products'
 import { Route as AdminOrdersRouteImport } from './routes/admin.orders'
 import { Route as AdminCategoriesRouteImport } from './routes/admin.categories'
-import { Route as ApiWebhooksPaymentsProviderRouteImport } from './routes/api/webhooks.payments.$provider'
 
 const ShopRoute = ShopRouteImport.update({
   id: '/shop',
@@ -113,12 +112,6 @@ const AdminCategoriesRoute = AdminCategoriesRouteImport.update({
   path: '/categories',
   getParentRoute: () => AdminRoute,
 } as any)
-const ApiWebhooksPaymentsProviderRoute =
-  ApiWebhooksPaymentsProviderRouteImport.update({
-    id: '/api/webhooks/payments/$provider',
-    path: '/api/webhooks/payments/$provider',
-    getParentRoute: () => rootRouteImport,
-  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -138,7 +131,6 @@ export interface FileRoutesByFullPath {
   '/products/$slug': typeof ProductsSlugRoute
   '/admin/': typeof AdminIndexRoute
   '/orders/': typeof OrdersIndexRoute
-  '/api/webhooks/payments/$provider': typeof ApiWebhooksPaymentsProviderRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -157,7 +149,6 @@ export interface FileRoutesByTo {
   '/products/$slug': typeof ProductsSlugRoute
   '/admin': typeof AdminIndexRoute
   '/orders': typeof OrdersIndexRoute
-  '/api/webhooks/payments/$provider': typeof ApiWebhooksPaymentsProviderRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -178,7 +169,6 @@ export interface FileRoutesById {
   '/products/$slug': typeof ProductsSlugRoute
   '/admin/': typeof AdminIndexRoute
   '/orders/': typeof OrdersIndexRoute
-  '/api/webhooks/payments/$provider': typeof ApiWebhooksPaymentsProviderRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -200,7 +190,6 @@ export interface FileRouteTypes {
     | '/products/$slug'
     | '/admin/'
     | '/orders/'
-    | '/api/webhooks/payments/$provider'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -219,7 +208,6 @@ export interface FileRouteTypes {
     | '/products/$slug'
     | '/admin'
     | '/orders'
-    | '/api/webhooks/payments/$provider'
   id:
     | '__root__'
     | '/'
@@ -239,7 +227,6 @@ export interface FileRouteTypes {
     | '/products/$slug'
     | '/admin/'
     | '/orders/'
-    | '/api/webhooks/payments/$provider'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -255,7 +242,6 @@ export interface RootRouteChildren {
   OrdersOrderIdRoute: typeof OrdersOrderIdRoute
   ProductsSlugRoute: typeof ProductsSlugRoute
   OrdersIndexRoute: typeof OrdersIndexRoute
-  ApiWebhooksPaymentsProviderRoute: typeof ApiWebhooksPaymentsProviderRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -379,13 +365,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminCategoriesRouteImport
       parentRoute: typeof AdminRoute
     }
-    '/api/webhooks/payments/$provider': {
-      id: '/api/webhooks/payments/$provider'
-      path: '/api/webhooks/payments/$provider'
-      fullPath: '/api/webhooks/payments/$provider'
-      preLoaderRoute: typeof ApiWebhooksPaymentsProviderRouteImport
-      parentRoute: typeof rootRouteImport
-    }
   }
 }
 
@@ -420,8 +399,17 @@ const rootRouteChildren: RootRouteChildren = {
   OrdersOrderIdRoute: OrdersOrderIdRoute,
   ProductsSlugRoute: ProductsSlugRoute,
   OrdersIndexRoute: OrdersIndexRoute,
-  ApiWebhooksPaymentsProviderRoute: ApiWebhooksPaymentsProviderRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
