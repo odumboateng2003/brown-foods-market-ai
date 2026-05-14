@@ -1,0 +1,1 @@
+ALTER TYPE public.momo_provider ADD VALUE IF NOT EXISTS 'hubtel';

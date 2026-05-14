@@ -349,7 +349,7 @@ export type Database = {
     }
     Enums: {
       app_role: "admin" | "staff" | "customer"
-      momo_provider: "mtn" | "telecel" | "airteltigo"
+      momo_provider: "mtn" | "telecel" | "airteltigo" | "hubtel"
       order_status:
         | "pending"
         | "confirmed"
@@ -486,7 +486,7 @@ export const Constants = {
   public: {
     Enums: {
       app_role: ["admin", "staff", "customer"],
-      momo_provider: ["mtn", "telecel", "airteltigo"],
+      momo_provider: ["mtn", "telecel", "airteltigo", "hubtel"],
       order_status: [
         "pending",
         "confirmed",
