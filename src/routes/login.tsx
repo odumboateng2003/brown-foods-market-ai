@@ -7,6 +7,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { lovable } from "@/integrations/lovable";
 import { toast } from "sonner";
 import { useAuth } from "@/hooks/use-auth";
+import { useRoles } from "@/hooks/use-role";
 
 export const Route = createFileRoute("/login")({
   component: LoginPage,
