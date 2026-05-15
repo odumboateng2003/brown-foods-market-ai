@@ -56,7 +56,7 @@ function LoginPage() {
           } else throw error;
         } else {
           toast.success("Welcome back!");
-          navigate({ to: "/" });
+          // redirect handled by useEffect once roles resolve
         }
       }
     } catch (err) {
