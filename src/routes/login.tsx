@@ -7,6 +7,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { lovable } from "@/integrations/lovable";
 import { toast } from "sonner";
 import { useAuth } from "@/hooks/use-auth";
+import { useRoles } from "@/hooks/use-role";
 
 export const Route = createFileRoute("/login")({
   component: LoginPage,
@@ -16,6 +17,7 @@ export const Route = createFileRoute("/login")({
 function LoginPage() {
   const navigate = useNavigate();
   const { user } = useAuth();
+  const { isAdmin, loading: rolesLoading } = useRoles();
   const [mode, setMode] = useState<"signin" | "signup">("signin");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -23,8 +25,9 @@ function LoginPage() {
   const [busy, setBusy] = useState(false);
 
   useEffect(() => {
-    if (user) navigate({ to: "/" });
-  }, [user, navigate]);
+    if (!user || rolesLoading) return;
+    navigate({ to: isAdmin ? "/admin/dashboard" : "/" });
+  }, [user, isAdmin, rolesLoading, navigate]);
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -53,7 +56,7 @@ function LoginPage() {
           } else throw error;
         } else {
           toast.success("Welcome back!");
-          navigate({ to: "/" });
+          // redirect handled by useEffect once roles resolve
         }
       }
     } catch (err) {
