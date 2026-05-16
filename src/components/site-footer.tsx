@@ -1,6 +1,17 @@
 import { Link } from "@tanstack/react-router";
+import { Facebook, Instagram, Twitter, Music2 } from "lucide-react";
+import { usePublishedOrDefault } from "@/lib/site-content";
 
 export function SiteFooter() {
+  const f = usePublishedOrDefault("footer");
+  const b = usePublishedOrDefault("business_info");
+  const socials = [
+    { url: b.facebook, icon: Facebook, label: "Facebook" },
+    { url: b.instagram, icon: Instagram, label: "Instagram" },
+    { url: b.twitter, icon: Twitter, label: "Twitter" },
+    { url: b.tiktok, icon: Music2, label: "TikTok" },
+  ].filter((s) => s.url);
+
   return (
     <footer className="mt-24 border-t border-border bg-secondary/40">
       <div className="mx-auto max-w-7xl px-4 py-12">
@@ -8,14 +19,24 @@ export function SiteFooter() {
           <div className="md:col-span-2">
             <div className="flex items-center gap-2">
               <span className="grid h-9 w-9 place-items-center rounded-lg bg-gradient-warm font-display text-lg font-bold text-spice-foreground">B</span>
-              <span className="font-display text-xl font-bold">BROWN Foods Market</span>
+              <span className="font-display text-xl font-bold">{b.name}</span>
             </div>
-            <p className="mt-4 max-w-md text-sm text-muted-foreground">
-              Authentic Ghanaian foodstuffs, delivered to your door. From Pona yam to scotch bonnet — sourced from trusted local farmers.
-            </p>
-            <p className="mt-4 max-w-md text-xs text-amber-700">
-              Platform under development. Live payments are temporarily unavailable.
-            </p>
+            <p className="mt-4 max-w-md text-sm text-muted-foreground">{f.tagline}</p>
+            {f.dev_notice && (
+              <p className="mt-4 max-w-md text-xs text-amber-700">{f.dev_notice}</p>
+            )}
+            {socials.length > 0 && (
+              <div className="mt-4 flex gap-3">
+                {socials.map((s) => {
+                  const Icon = s.icon;
+                  return (
+                    <a key={s.label} href={s.url} target="_blank" rel="noreferrer" aria-label={s.label} className="text-muted-foreground hover:text-foreground">
+                      <Icon className="h-5 w-5" />
+                    </a>
+                  );
+                })}
+              </div>
+            )}
           </div>
           <div>
             <h4 className="mb-3 text-sm font-semibold">Shop</h4>
@@ -37,7 +58,7 @@ export function SiteFooter() {
           </div>
         </div>
         <p className="mt-10 border-t border-border pt-6 text-xs text-muted-foreground">
-          © {new Date().getFullYear()} BROWN Foods Market. Made with love in Accra.
+          © {new Date().getFullYear()} {b.name}. {b.address && `· ${b.address}`}
         </p>
       </div>
     </footer>

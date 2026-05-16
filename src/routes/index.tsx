@@ -4,6 +4,7 @@ import { ArrowRight, Truck, ShieldCheck, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ProductCard, type Product } from "@/components/product-card";
 import { supabase } from "@/integrations/supabase/client";
+import { usePublishedOrDefault } from "@/lib/site-content";
 import heroImg from "@/assets/hero-market.jpg";
 
 export const Route = createFileRoute("/")({
@@ -13,6 +14,7 @@ export const Route = createFileRoute("/")({
 type Category = { id: string; name: string; slug: string; icon: string | null };
 
 function Home() {
+  const hero = usePublishedOrDefault("home_hero");
   const { data: categories } = useQuery({
     queryKey: ["categories"],
     queryFn: async () => {
@@ -45,20 +47,20 @@ function Home() {
         <div className="mx-auto grid max-w-7xl items-center gap-10 px-4 py-12 md:grid-cols-2 md:py-20">
           <div className="relative z-10">
             <span className="inline-flex items-center gap-2 rounded-full border border-spice/20 bg-spice/10 px-3 py-1 text-xs font-medium text-spice">
-              <Sparkles className="h-3.5 w-3.5" /> Fresh from Ghanaian farms
+              <Sparkles className="h-3.5 w-3.5" /> {hero.eyebrow}
             </span>
             <h1 className="mt-5 font-display text-4xl font-bold leading-[1.05] text-foreground text-balance md:text-6xl">
-              The taste of <span className="bg-gradient-warm bg-clip-text text-transparent">home</span>, delivered.
+              {hero.title} <span className="bg-gradient-warm bg-clip-text text-transparent">{hero.highlight}</span>, delivered.
             </h1>
             <p className="mt-5 max-w-lg text-base text-muted-foreground md:text-lg">
-              From Pona yam and scotch bonnet to smoked tilapia and red palm oil — authentic Ghanaian foodstuffs, sourced fresh and delivered to your door.
+              {hero.subtitle}
             </p>
             <div className="mt-8 flex flex-wrap gap-3">
               <Button asChild size="xl" variant="hero">
-                <Link to="/shop">Shop the market <ArrowRight className="ml-1 h-4 w-4" /></Link>
+                <Link to="/shop">{hero.cta_primary} <ArrowRight className="ml-1 h-4 w-4" /></Link>
               </Button>
               <Button asChild size="xl" variant="outline">
-                <Link to="/shop">Browse categories</Link>
+                <Link to="/shop">{hero.cta_secondary}</Link>
               </Button>
             </div>
             <div className="mt-10 grid max-w-md grid-cols-3 gap-4 text-xs">
