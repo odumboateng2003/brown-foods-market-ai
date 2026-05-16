@@ -1,0 +1,299 @@
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
+
+/* ----------------------------- Content shapes ----------------------------- */
+
+export type HomeHero = {
+  eyebrow: string;
+  title: string;
+  highlight: string;
+  subtitle: string;
+  cta_primary: string;
+  cta_secondary: string;
+};
+
+export type AboutContent = {
+  title: string;
+  intro: string;
+  mission_heading: string;
+  mission_body: string;
+  what_we_do_heading: string;
+  what_we_do_items: string[];
+  outro_heading: string;
+  outro_body: string;
+};
+
+export type ContactContent = {
+  title: string;
+  intro: string;
+  email: string;
+  phone: string;
+  whatsapp: string;
+  address: string;
+  hours: string;
+};
+
+export type LongPage = { title: string; body: string };
+
+export type FooterContent = {
+  tagline: string;
+  dev_notice: string;
+};
+
+export type BusinessInfo = {
+  name: string;
+  email: string;
+  phone: string;
+  whatsapp: string;
+  address: string;
+  facebook: string;
+  instagram: string;
+  twitter: string;
+  tiktok: string;
+};
+
+export type DeliveryInfo = {
+  intro: string;
+  regions: { name: string; fee_ghs: number; eta: string }[];
+  notes: string;
+};
+
+export type ContentMap = {
+  home_hero: HomeHero;
+  about: AboutContent;
+  contact: ContactContent;
+  privacy: LongPage;
+  terms: LongPage;
+  footer: FooterContent;
+  business_info: BusinessInfo;
+  delivery_info: DeliveryInfo;
+};
+
+export type ContentKey = keyof ContentMap;
+
+/* ----------------------------- Defaults ----------------------------- */
+
+export const DEFAULT_CONTENT: ContentMap = {
+  home_hero: {
+    eyebrow: "Fresh from Ghanaian farms",
+    title: "The taste of",
+    highlight: "home",
+    subtitle:
+      "From Pona yam and scotch bonnet to smoked tilapia and red palm oil — authentic Ghanaian foodstuffs, sourced fresh and delivered to your door.",
+    cta_primary: "Shop the market",
+    cta_secondary: "Browse categories",
+  },
+  about: {
+    title: "About BROWN Foods Market",
+    intro:
+      "We are a Ghanaian-owned food marketplace built to make authentic local foodstuffs easier to buy, anywhere in the country.",
+    mission_heading: "Our mission",
+    mission_body:
+      "From Pona yam in Techiman to fresh tilapia from Lake Volta, we partner directly with farmers, fishermen and producers to bring quality Ghanaian foodstuffs to your home at fair prices.",
+    what_we_do_heading: "What we do",
+    what_we_do_items: [
+      "Source produce from trusted local suppliers.",
+      "Quality-check every order before it leaves the warehouse.",
+      "Deliver across Greater Accra, Ashanti and beyond.",
+      "Support customers in English, Twi and Ga.",
+    ],
+    outro_heading: "Built for Ghana, scaling across Africa",
+    outro_body:
+      "Our team is currently building and testing the platform. Live payments will be enabled soon. In the meantime, you can browse the catalogue, create an account, and explore how the marketplace works.",
+  },
+  contact: {
+    title: "Contact us",
+    intro:
+      "We'd love to hear from you. Reach out for orders, partnerships, or general questions — our team typically responds within one business day.",
+    email: "support@brownfoodsmarket.com",
+    phone: "+233 24 000 0000",
+    whatsapp: "+233 24 000 0000",
+    address: "Accra, Greater Accra Region, Ghana",
+    hours: "Monday – Saturday, 8:00 – 18:00 GMT.",
+  },
+  privacy: {
+    title: "Privacy Policy",
+    body: `1. Information we collect
+We collect information you provide when you create an account, place an order, or contact support — including your name, email, phone number, delivery address, and order history.
+
+2. How we use your information
+- To process and deliver your orders.
+- To communicate order status, receipts, and customer support.
+- To improve our products, services, and recommendations.
+- To comply with Ghanaian legal and tax obligations.
+
+3. Payment information
+The platform is currently in development and live payments are temporarily disabled.
+
+4. Sharing
+We do not sell your personal data.
+
+5. Security
+We use industry-standard encryption, role-based access controls, and secure authentication to protect your account.
+
+6. Your rights
+You may request access, correction, or deletion of your personal data at any time.
+
+7. Contact
+Questions about this policy? Reach us at privacy@brownfoodsmarket.com.`,
+  },
+  terms: {
+    title: "Terms & Conditions",
+    body: `1. Acceptance of terms
+By using BROWN Foods Market, you agree to these Terms & Conditions and our Privacy Policy.
+
+2. Development status
+The platform is currently in active development. Live payments are temporarily disabled.
+
+3. Accounts
+You are responsible for keeping your login credentials confidential and for all activity under your account.
+
+4. Orders & pricing
+Prices are listed in Ghana Cedis (GHS) and may change without notice.
+
+5. Delivery
+Delivery times depend on your location and product availability.
+
+6. Returns
+Perishable items cannot be returned once delivered. Damaged or incorrect items must be reported within 24 hours of delivery.
+
+7. Limitation of liability
+To the fullest extent permitted by Ghanaian law, BROWN Foods Market is not liable for indirect, incidental, or consequential damages arising from your use of the platform.
+
+8. Governing law
+These terms are governed by the laws of the Republic of Ghana.
+
+9. Contact
+Questions? Email support@brownfoodsmarket.com.`,
+  },
+  footer: {
+    tagline:
+      "Authentic Ghanaian foodstuffs, delivered to your door. From Pona yam to scotch bonnet — sourced from trusted local farmers.",
+    dev_notice:
+      "Platform under development. Live payments are temporarily unavailable.",
+  },
+  business_info: {
+    name: "BROWN Foods Market",
+    email: "support@brownfoodsmarket.com",
+    phone: "+233 24 000 0000",
+    whatsapp: "+233 24 000 0000",
+    address: "Accra, Greater Accra Region, Ghana",
+    facebook: "",
+    instagram: "",
+    twitter: "",
+    tiktok: "",
+  },
+  delivery_info: {
+    intro: "We deliver fresh foodstuffs across Ghana.",
+    regions: [
+      { name: "Greater Accra", fee_ghs: 20, eta: "Same day" },
+      { name: "Ashanti", fee_ghs: 35, eta: "1-2 days" },
+      { name: "Other regions", fee_ghs: 50, eta: "2-4 days" },
+    ],
+    notes: "Free delivery on orders over GHS 300 within Greater Accra.",
+  },
+};
+
+/* ----------------------------- Hooks ----------------------------- */
+
+function mergeWithDefault<K extends ContentKey>(
+  key: K,
+  value: unknown,
+): ContentMap[K] {
+  if (value && typeof value === "object" && !Array.isArray(value)) {
+    return { ...(DEFAULT_CONTENT[key] as object), ...(value as object) } as ContentMap[K];
+  }
+  return DEFAULT_CONTENT[key];
+}
+
+/** Read the published version of a content key (public-safe). */
+export function usePublishedContent<K extends ContentKey>(key: K) {
+  return useQuery({
+    queryKey: ["site_content", "published", key],
+    queryFn: async () => {
+      const { data } = await supabase
+        .from("site_content")
+        .select("published_content")
+        .eq("key", key)
+        .maybeSingle();
+      return mergeWithDefault(key, data?.published_content);
+    },
+    staleTime: 60_000,
+  });
+}
+
+/** Sync-style helper: returns published value or default while loading. */
+export function usePublishedOrDefault<K extends ContentKey>(key: K): ContentMap[K] {
+  const { data } = usePublishedContent(key);
+  return (data as ContentMap[K] | undefined) ?? DEFAULT_CONTENT[key];
+}
+
+/** Admin: read draft + published for editing. */
+export function useEditableContent<K extends ContentKey>(key: K) {
+  return useQuery({
+    queryKey: ["site_content", "editable", key],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("site_content")
+        .select("draft_content, published_content, published_at, updated_at")
+        .eq("key", key)
+        .maybeSingle();
+      if (error) throw error;
+      return {
+        draft: mergeWithDefault(key, data?.draft_content),
+        published: data?.published_content
+          ? mergeWithDefault(key, data.published_content)
+          : null,
+        published_at: data?.published_at ?? null,
+        updated_at: data?.updated_at ?? null,
+      };
+    },
+  });
+}
+
+export async function saveDraft<K extends ContentKey>(
+  key: K,
+  draft: ContentMap[K],
+) {
+  const { error } = await supabase
+    .from("site_content")
+    .upsert(
+      { key, draft_content: draft as never },
+      { onConflict: "key" },
+    );
+  if (error) throw error;
+}
+
+export async function publishContent<K extends ContentKey>(
+  key: K,
+  draft: ContentMap[K],
+) {
+  const { error } = await supabase
+    .from("site_content")
+    .upsert(
+      {
+        key,
+        draft_content: draft as never,
+        published_content: draft as never,
+        published_at: new Date().toISOString(),
+      },
+      { onConflict: "key" },
+    );
+  if (error) throw error;
+}
+
+export async function resetDraftToPublished<K extends ContentKey>(key: K) {
+  const { data } = await supabase
+    .from("site_content")
+    .select("published_content")
+    .eq("key", key)
+    .maybeSingle();
+  const published = data?.published_content ?? DEFAULT_CONTENT[key];
+  const { error } = await supabase
+    .from("site_content")
+    .upsert(
+      { key, draft_content: published as never },
+      { onConflict: "key" },
+    );
+  if (error) throw error;
+}

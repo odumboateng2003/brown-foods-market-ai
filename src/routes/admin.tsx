@@ -1,6 +1,6 @@
 import { createFileRoute, Link, Outlet, useLocation, useNavigate } from "@tanstack/react-router";
 import { useEffect } from "react";
-import { LayoutDashboard, Package, Tag, ShoppingBag, Users, ArrowLeft } from "lucide-react";
+import { LayoutDashboard, Package, Tag, ShoppingBag, Users, ArrowLeft, FileText } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
 import { useRoles } from "@/hooks/use-role";
 import { cn } from "@/lib/utils";
@@ -16,6 +16,7 @@ const NAV = [
   { to: "/admin/categories", label: "Categories", icon: Tag, exact: false },
   { to: "/admin/orders", label: "Orders", icon: ShoppingBag, exact: false },
   { to: "/admin/users", label: "Users", icon: Users, exact: false },
+  { to: "/admin/content", label: "Website Content", icon: FileText, exact: false },
 ] as const;
 
 function AdminLayout() {

@@ -1,5 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Button } from "@/components/ui/button";
+import { usePublishedOrDefault } from "@/lib/site-content";
 
 export const Route = createFileRoute("/about")({
   component: AboutPage,
@@ -14,36 +15,23 @@ export const Route = createFileRoute("/about")({
 });
 
 function AboutPage() {
+  const v = usePublishedOrDefault("about");
   return (
     <div className="mx-auto max-w-3xl px-4 py-12">
-      <h1 className="font-display text-4xl font-bold">About BROWN Foods Market</h1>
-      <p className="mt-4 text-lg text-muted-foreground">
-        We are a Ghanaian-owned food marketplace built to make authentic local
-        foodstuffs easier to buy, anywhere in the country.
-      </p>
+      <h1 className="font-display text-4xl font-bold">{v.title}</h1>
+      <p className="mt-4 text-lg text-muted-foreground">{v.intro}</p>
 
       <section className="prose prose-neutral mt-8 max-w-none text-foreground">
-        <h2 className="font-display text-2xl font-bold">Our mission</h2>
-        <p>
-          From Pona yam in Techiman to fresh tilapia from Lake Volta, we partner
-          directly with farmers, fishermen and producers to bring quality
-          Ghanaian foodstuffs to your home at fair prices.
-        </p>
+        <h2 className="font-display text-2xl font-bold">{v.mission_heading}</h2>
+        <p>{v.mission_body}</p>
 
-        <h2 className="font-display text-2xl font-bold">What we do</h2>
+        <h2 className="font-display text-2xl font-bold">{v.what_we_do_heading}</h2>
         <ul>
-          <li>Source produce from trusted local suppliers.</li>
-          <li>Quality-check every order before it leaves the warehouse.</li>
-          <li>Deliver across Greater Accra, Ashanti and beyond.</li>
-          <li>Support customers in English, Twi and Ga.</li>
+          {v.what_we_do_items.map((item, i) => <li key={i}>{item}</li>)}
         </ul>
 
-        <h2 className="font-display text-2xl font-bold">Built for Ghana, scaling across Africa</h2>
-        <p>
-          Our team is currently building and testing the platform. Live payments
-          will be enabled soon. In the meantime, you can browse the catalogue,
-          create an account, and explore how the marketplace works.
-        </p>
+        <h2 className="font-display text-2xl font-bold">{v.outro_heading}</h2>
+        <p>{v.outro_body}</p>
       </section>
 
       <div className="mt-10 flex gap-3">
