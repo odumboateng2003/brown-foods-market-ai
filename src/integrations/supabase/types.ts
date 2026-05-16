@@ -313,6 +313,66 @@ export type Database = {
         }
         Relationships: []
       }
+      site_content: {
+        Row: {
+          draft_content: Json
+          id: string
+          key: string
+          published_at: string | null
+          published_content: Json | null
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          draft_content?: Json
+          id?: string
+          key: string
+          published_at?: string | null
+          published_content?: Json | null
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          draft_content?: Json
+          id?: string
+          key?: string
+          published_at?: string | null
+          published_content?: Json | null
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: []
+      }
+      site_faqs: {
+        Row: {
+          answer: string
+          created_at: string
+          id: string
+          is_published: boolean
+          question: string
+          sort_order: number
+          updated_at: string
+        }
+        Insert: {
+          answer: string
+          created_at?: string
+          id?: string
+          is_published?: boolean
+          question: string
+          sort_order?: number
+          updated_at?: string
+        }
+        Update: {
+          answer?: string
+          created_at?: string
+          id?: string
+          is_published?: boolean
+          question?: string
+          sort_order?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
       user_roles: {
         Row: {
           created_at: string
