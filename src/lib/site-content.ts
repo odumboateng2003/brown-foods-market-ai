@@ -225,7 +225,7 @@ export function usePublishedContent<K extends ContentKey>(key: K) {
 /** Sync-style helper: returns published value or default while loading. */
 export function usePublishedOrDefault<K extends ContentKey>(key: K): ContentMap[K] {
   const { data } = usePublishedContent(key);
-  return data ?? DEFAULT_CONTENT[key];
+  return (data as ContentMap[K] | undefined) ?? DEFAULT_CONTENT[key];
 }
 
 /** Admin: read draft + published for editing. */
@@ -258,7 +258,7 @@ export async function saveDraft<K extends ContentKey>(
   const { error } = await supabase
     .from("site_content")
     .upsert(
-      { key, draft_content: draft as unknown as Record<string, unknown> },
+      { key, draft_content: draft as never },
       { onConflict: "key" },
     );
   if (error) throw error;
@@ -273,8 +273,8 @@ export async function publishContent<K extends ContentKey>(
     .upsert(
       {
         key,
-        draft_content: draft as unknown as Record<string, unknown>,
-        published_content: draft as unknown as Record<string, unknown>,
+        draft_content: draft as never,
+        published_content: draft as never,
         published_at: new Date().toISOString(),
       },
       { onConflict: "key" },
@@ -292,7 +292,7 @@ export async function resetDraftToPublished<K extends ContentKey>(key: K) {
   const { error } = await supabase
     .from("site_content")
     .upsert(
-      { key, draft_content: published as Record<string, unknown> },
+      { key, draft_content: published as never },
       { onConflict: "key" },
     );
   if (error) throw error;

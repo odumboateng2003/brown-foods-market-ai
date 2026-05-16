@@ -153,7 +153,7 @@ function ContentEditor({ contentKey }: { contentKey: ContentKey }) {
           Restore defaults
         </Button>
         <div className="ml-auto text-xs text-muted-foreground">
-          {data.published_at ? `Last published ${new Date(data.published_at).toLocaleString()}` : "Not yet published"}
+          {data?.published_at ? `Last published ${new Date(data.published_at).toLocaleString()}` : "Not yet published"}
         </div>
       </div>
 
