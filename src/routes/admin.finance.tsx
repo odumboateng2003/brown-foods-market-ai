@@ -139,9 +139,12 @@ function FinancePage() {
     };
   }, [data]);
 
-  const updatePercent = async (key: keyof Settings, value: number) => {
+  const updatePercent = async (key: "reinvestment_percent" | "operational_expense_percent", value: number) => {
     if (!data?.settings) return;
-    const { error } = await supabase.from("finance_settings").update({ [key]: value }).eq("id", data.settings.id);
+    const update = key === "reinvestment_percent"
+      ? { reinvestment_percent: value }
+      : { operational_expense_percent: value };
+    const { error } = await supabase.from("finance_settings").update(update).eq("id", data.settings.id);
     if (error) return toast.error(error.message);
     qc.invalidateQueries({ queryKey: ["finance"] });
   };
