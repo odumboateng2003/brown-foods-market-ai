@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { PasswordInput } from "@/components/password-input";
 import { supabase } from "@/integrations/supabase/client";
 import { lovable } from "@/integrations/lovable";
 import { toast } from "sonner";
@@ -117,7 +118,7 @@ function LoginPage() {
           </div>
           <div className="space-y-1.5">
             <Label htmlFor="password">Password</Label>
-            <Input id="password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} minLength={6} required />
+            <PasswordInput id="password" value={password} onChange={(e) => setPassword(e.target.value)} minLength={6} required />
           </div>
           <Button type="submit" disabled={busy} variant="hero" size="lg" className="w-full">
             {busy ? "Please wait…" : mode === "signin" ? "Sign in" : "Create account"}
