@@ -1,8 +1,8 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { PasswordInput } from "@/components/password-input";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
@@ -63,11 +63,11 @@ function ResetPasswordPage() {
           <form onSubmit={submit} className="mt-6 space-y-4">
             <div className="space-y-1.5">
               <Label htmlFor="password">New password</Label>
-              <Input id="password" type="password" minLength={8} required value={password} onChange={(e) => setPassword(e.target.value)} />
+              <PasswordInput id="password" minLength={8} required value={password} onChange={(e) => setPassword(e.target.value)} />
             </div>
             <div className="space-y-1.5">
               <Label htmlFor="confirm">Confirm password</Label>
-              <Input id="confirm" type="password" minLength={8} required value={confirm} onChange={(e) => setConfirm(e.target.value)} />
+              <PasswordInput id="confirm" minLength={8} required value={confirm} onChange={(e) => setConfirm(e.target.value)} />
             </div>
             <Button type="submit" disabled={busy} variant="hero" size="lg" className="w-full">
               {busy ? "Updating…" : "Update password"}

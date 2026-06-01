@@ -73,6 +73,60 @@ export type Database = {
         }
         Relationships: []
       }
+      finance_settings: {
+        Row: {
+          id: string
+          operational_expense_percent: number
+          reinvestment_percent: number
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          id?: string
+          operational_expense_percent?: number
+          reinvestment_percent?: number
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          id?: string
+          operational_expense_percent?: number
+          reinvestment_percent?: number
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: []
+      }
+      finance_transactions: {
+        Row: {
+          amount_ghs: number
+          created_at: string
+          created_by: string | null
+          id: string
+          note: string | null
+          order_id: string | null
+          type: Database["public"]["Enums"]["finance_txn_type"]
+        }
+        Insert: {
+          amount_ghs: number
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          note?: string | null
+          order_id?: string | null
+          type: Database["public"]["Enums"]["finance_txn_type"]
+        }
+        Update: {
+          amount_ghs?: number
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          note?: string | null
+          order_id?: string | null
+          type?: Database["public"]["Enums"]["finance_txn_type"]
+        }
+        Relationships: []
+      }
       order_items: {
         Row: {
           created_at: string
@@ -242,39 +296,48 @@ export type Database = {
       products: {
         Row: {
           category_id: string | null
+          cost_price_ghs: number
           created_at: string
           description: string | null
           id: string
           image_url: string | null
+          is_active: boolean
           is_featured: boolean
           name: string
           price_ghs: number
+          sale_price_ghs: number | null
           slug: string
           stock: number
           unit: string
         }
         Insert: {
           category_id?: string | null
+          cost_price_ghs?: number
           created_at?: string
           description?: string | null
           id?: string
           image_url?: string | null
+          is_active?: boolean
           is_featured?: boolean
           name: string
           price_ghs: number
+          sale_price_ghs?: number | null
           slug: string
           stock?: number
           unit?: string
         }
         Update: {
           category_id?: string | null
+          cost_price_ghs?: number
           created_at?: string
           description?: string | null
           id?: string
           image_url?: string | null
+          is_active?: boolean
           is_featured?: boolean
           name?: string
           price_ghs?: number
+          sale_price_ghs?: number | null
           slug?: string
           stock?: number
           unit?: string
@@ -409,6 +472,12 @@ export type Database = {
     }
     Enums: {
       app_role: "admin" | "staff" | "customer"
+      finance_txn_type:
+        | "revenue"
+        | "expense"
+        | "reinvestment"
+        | "withdrawal"
+        | "investment"
       momo_provider: "mtn" | "telecel" | "airteltigo" | "hubtel"
       order_status:
         | "pending"
@@ -546,6 +615,13 @@ export const Constants = {
   public: {
     Enums: {
       app_role: ["admin", "staff", "customer"],
+      finance_txn_type: [
+        "revenue",
+        "expense",
+        "reinvestment",
+        "withdrawal",
+        "investment",
+      ],
       momo_provider: ["mtn", "telecel", "airteltigo", "hubtel"],
       order_status: [
         "pending",
