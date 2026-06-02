@@ -73,7 +73,8 @@ function StaffManagement() {
   };
 
   const createMut = useMutation({
-    mutationFn: (input: Parameters<typeof createStaff>[0]["data"]) => createFn({ data: input }),
+    mutationFn: (input: { email: string; password: string; full_name: string; phone?: string; role: "admin" | "staff" }) =>
+      createFn({ data: input }),
     onSuccess: () => {
       toast.success("Staff account created");
       setCreateOpen(false);
@@ -83,7 +84,8 @@ function StaffManagement() {
   });
 
   const updateMut = useMutation({
-    mutationFn: (input: Parameters<typeof updateStaff>[0]["data"]) => updateFn({ data: input }),
+    mutationFn: (input: { user_id: string; full_name?: string; phone?: string | null; role?: "admin" | "staff"; status?: "active" | "suspended" | "disabled" }) =>
+      updateFn({ data: input }),
     onSuccess: () => {
       toast.success("Updated");
       invalidate();
