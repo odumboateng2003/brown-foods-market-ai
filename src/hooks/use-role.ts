@@ -32,10 +32,18 @@ export function useRoles() {
     };
   }, [user, authLoading]);
 
+  const isSuperAdmin = roles.includes("admin");
+  const isAdminStaff = roles.includes("staff");
+
   return {
     roles,
     loading: loading || authLoading,
-    isAdmin: roles.includes("admin"),
-    isStaff: roles.includes("staff") || roles.includes("admin"),
+    isSuperAdmin,
+    isAdminStaff,
+    // Backward-compat aliases
+    isAdmin: isSuperAdmin,
+    isStaff: isSuperAdmin || isAdminStaff,
+    // Combined: anyone with admin-area access
+    hasAdminAccess: isSuperAdmin || isAdminStaff,
   };
 }
