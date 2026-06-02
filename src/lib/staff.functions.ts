@@ -14,19 +14,21 @@ async function assertSuperAdmin(userId: string) {
   if (!data) throw new Error("Forbidden: Super Admin only");
 }
 
+type JsonDetails = Record<string, string | number | boolean | null | undefined>;
+
 async function logActivity(
   actorId: string,
   actorEmail: string | undefined,
   action: string,
   targetUserId: string | null,
-  details: Record<string, unknown> = {},
+  details: JsonDetails = {},
 ) {
   await supabaseAdmin.from("staff_activity_logs").insert({
     actor_id: actorId,
     actor_email: actorEmail ?? null,
     target_user_id: targetUserId,
     action,
-    details,
+    details: details as never,
   });
 }
 
