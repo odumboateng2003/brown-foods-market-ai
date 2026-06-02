@@ -17,7 +17,7 @@ import {
 
 export function SiteHeader() {
   const { user } = useAuth();
-  const { isAdmin } = useRoles();
+  const { isSuperAdmin, isAdminStaff, hasAdminAccess } = useRoles();
   const navigate = useNavigate();
   const [q, setQ] = useState("");
   const [count, setCount] = useState(0);
@@ -105,14 +105,21 @@ export function SiteHeader() {
                 <DropdownMenuItem onClick={() => navigate({ to: "/cart" })}>
                   <ShoppingCart className="mr-2 h-4 w-4" /> My cart
                 </DropdownMenuItem>
-                {isAdmin && (
+                {hasAdminAccess && (
                   <>
-                    <DropdownMenuItem onClick={() => navigate({ to: "/admin/dashboard" })}>
-                      <LayoutDashboard className="mr-2 h-4 w-4" /> Admin Dashboard
+                    <DropdownMenuItem
+                      onClick={() =>
+                        navigate({ to: isSuperAdmin ? "/admin/dashboard" : "/admin/orders" })
+                      }
+                    >
+                      <LayoutDashboard className="mr-2 h-4 w-4" />
+                      {isSuperAdmin ? "Super Admin Dashboard" : "Staff Dashboard"}
                     </DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => navigate({ to: "/admin" })}>
-                      <LayoutDashboard className="mr-2 h-4 w-4" /> Admin Home
-                    </DropdownMenuItem>
+                    {isSuperAdmin && (
+                      <DropdownMenuItem onClick={() => navigate({ to: "/admin/staff" })}>
+                        <LayoutDashboard className="mr-2 h-4 w-4" /> Staff Management
+                      </DropdownMenuItem>
+                    )}
                   </>
                 )}
                 <DropdownMenuItem
