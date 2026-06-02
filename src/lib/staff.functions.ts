@@ -230,7 +230,7 @@ export type ActivityLogRow = {
   actor_email: string | null;
   target_user_id: string | null;
   action: string;
-  details: Record<string, unknown>;
+  details: string;
   created_at: string;
 };
 
@@ -244,5 +244,12 @@ export const listStaffActivity = createServerFn({ method: "GET" })
       .order("created_at", { ascending: false })
       .limit(100);
     if (error) throw new Error(error.message);
-    return (data ?? []) as ActivityLogRow[];
+    return (data ?? []).map((r) => ({
+      id: r.id as string,
+      actor_email: (r.actor_email as string | null) ?? null,
+      target_user_id: (r.target_user_id as string | null) ?? null,
+      action: r.action as string,
+      details: JSON.stringify(r.details ?? {}),
+      created_at: r.created_at as string,
+    }));
   });
