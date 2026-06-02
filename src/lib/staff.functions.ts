@@ -138,7 +138,7 @@ export const updateStaff = createServerFn({ method: "POST" })
   .handler(async ({ data, context }) => {
     await assertSuperAdmin(context.userId);
 
-    const updates: Record<string, unknown> = {};
+    const updates: { full_name?: string; phone?: string | null; status?: "active" | "suspended" | "disabled" } = {};
     if (data.full_name !== undefined) updates.full_name = data.full_name;
     if (data.phone !== undefined) updates.phone = data.phone;
     if (data.status !== undefined) updates.status = data.status;
@@ -165,7 +165,13 @@ export const updateStaff = createServerFn({ method: "POST" })
       await supabaseAdmin.auth.admin.updateUserById(data.user_id, { ban_duration: "none" });
     }
 
-    await logActivity(context.userId, context.claims?.email as string | undefined, "staff.update", data.user_id, updates);
+    await logActivity(
+      context.userId,
+      context.claims?.email as string | undefined,
+      "staff.update",
+      data.user_id,
+      { ...updates, role: data.role } as JsonDetails,
+    );
     return { ok: true };
   });
 
