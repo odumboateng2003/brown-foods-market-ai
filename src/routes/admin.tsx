@@ -29,15 +29,17 @@ type NavItem = {
 };
 
 const NAV: NavItem[] = [
-  { to: "/admin/dashboard", label: "Dashboard", icon: LayoutDashboard, exact: true, superOnly: true },
+  { to: "/admin/dashboard", label: "Dashboard", icon: LayoutDashboard, exact: true },
   { to: "/admin/orders", label: "Orders", icon: ShoppingBag, exact: false },
-  { to: "/admin/products", label: "Products", icon: Package, exact: false, superOnly: true },
-  { to: "/admin/categories", label: "Categories", icon: Tag, exact: false, superOnly: true },
+  { to: "/admin/products", label: "Products", icon: Package, exact: false },
+  { to: "/admin/categories", label: "Categories", icon: Tag, exact: false },
+  { to: "/admin/users", label: "Customers", icon: Users, exact: false },
   { to: "/admin/finance", label: "Finance", icon: Wallet, exact: false, superOnly: true },
   { to: "/admin/content", label: "Website Content", icon: FileText, exact: false, superOnly: true },
   { to: "/admin/staff", label: "Staff Management", icon: UserCog, exact: false, superOnly: true },
-  { to: "/admin/users", label: "Users", icon: Users, exact: false, superOnly: true },
 ];
+
+const SUPER_ONLY_PATHS = ["/admin/finance", "/admin/content", "/admin/staff"];
 
 function AdminLayout() {
   const { user, loading: authLoading } = useAuth();
@@ -50,15 +52,13 @@ function AdminLayout() {
     if (!user) navigate({ to: "/login" });
   }, [user, authLoading, roleLoading, navigate]);
 
-  // Redirect Admin Staff away from super-admin-only pages
+  // Block Admin Staff from Super-Admin-only pages
   useEffect(() => {
     if (authLoading || roleLoading || !user) return;
-    if (isSuperAdmin) return;
-    if (!isAdminStaff) return;
-    const allowed = ["/admin/orders", "/admin"];
-    const ok = allowed.some((p) => loc.pathname === p || loc.pathname.startsWith(p + "/")) ||
-      loc.pathname === "/admin";
-    if (!ok) navigate({ to: "/admin/orders" });
+    if (isSuperAdmin || !isAdminStaff) return;
+    if (SUPER_ONLY_PATHS.some((p) => loc.pathname === p || loc.pathname.startsWith(p + "/"))) {
+      navigate({ to: "/admin/dashboard" });
+    }
   }, [loc.pathname, isSuperAdmin, isAdminStaff, authLoading, roleLoading, user, navigate]);
 
   if (authLoading || roleLoading) {
