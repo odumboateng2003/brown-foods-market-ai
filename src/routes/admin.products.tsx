@@ -47,9 +47,9 @@ function AdminProducts() {
   const { data: products } = useQuery({
     queryKey: ["admin-products"],
     queryFn: async () => {
-      const { data, error } = await supabase.from("products").select("*").order("name");
+      const { data, error } = await supabase.rpc("get_admin_products");
       if (error) throw error;
-      return data as Product[];
+      return (data ?? []) as Product[];
     },
   });
   const { data: categories } = useQuery({

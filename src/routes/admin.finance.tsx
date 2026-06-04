@@ -51,7 +51,7 @@ function FinancePage() {
     queryKey: ["finance"],
     queryFn: async () => {
       const [products, items, orders, txns, settings] = await Promise.all([
-        supabase.from("products").select("id,name,stock,price_ghs,cost_price_ghs,sale_price_ghs"),
+        supabase.rpc("get_admin_products"),
         supabase.from("order_items").select("product_id,product_name,quantity,unit_price_ghs"),
         supabase.from("orders").select("id,total_ghs,payment_status"),
         supabase.from("finance_transactions").select("*").order("created_at", { ascending: false }),

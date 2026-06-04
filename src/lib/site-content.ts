@@ -233,11 +233,13 @@ export function useEditableContent<K extends ContentKey>(key: K) {
   return useQuery({
     queryKey: ["site_content", "editable", key],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from("site_content")
-        .select("draft_content, published_content, published_at, updated_at")
-        .eq("key", key)
-        .maybeSingle();
+      const { data: rows, error } = await (supabase.rpc as any)("get_admin_site_content", { _key: key });
+      const data = ((rows ?? []) as Array<{
+        draft_content: unknown;
+        published_content: unknown;
+        published_at: string | null;
+        updated_at: string | null;
+      }>)[0];
       if (error) throw error;
       return {
         draft: mergeWithDefault(key, data?.draft_content),
