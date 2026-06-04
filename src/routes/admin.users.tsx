@@ -1,104 +1,277 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { Shield, ShieldOff } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
+import { useServerFn } from "@tanstack/react-start";
+import { useMemo, useState } from "react";
+import { Search, Mail, Phone, ShoppingBag, ChevronDown, ChevronRight, ShieldCheck, ShieldAlert } from "lucide-react";
+import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { supabase } from "@/integrations/supabase/client";
-import { toast } from "sonner";
+import { Badge } from "@/components/ui/badge";
+import {
+  Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
+} from "@/components/ui/select";
+import {
+  Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription,
+} from "@/components/ui/dialog";
+import {
+  Collapsible, CollapsibleContent, CollapsibleTrigger,
+} from "@/components/ui/collapsible";
+import { useRoles } from "@/hooks/use-role";
+import { formatGHS } from "@/lib/format";
+import {
+  listCustomers,
+  getCustomerOrders,
+  type CustomerRow,
+  type CustomerOrder,
+} from "@/lib/customers.functions";
 
-export const Route = createFileRoute("/admin/users")({ component: AdminUsers });
+export const Route = createFileRoute("/admin/users")({
+  component: CustomersPage,
+  head: () => ({ meta: [{ title: "Customers — Admin" }] }),
+});
 
-type Row = {
-  id: string;
-  full_name: string | null;
-  created_at: string;
-  roles: string[];
+type Bucket = "today" | "this_week" | "this_month" | "older";
+const BUCKET_LABEL: Record<Bucket, string> = {
+  today: "Registered Today",
+  this_week: "Registered This Week",
+  this_month: "Registered This Month",
+  older: "Older Customers",
 };
 
-function AdminUsers() {
-  const qc = useQueryClient();
-  const { data } = useQuery({
-    queryKey: ["admin-users"],
-    queryFn: async (): Promise<Row[]> => {
-      const [{ data: profiles }, { data: roles }] = await Promise.all([
-        supabase.from("profiles").select("id,full_name,created_at"),
-        supabase.from("user_roles").select("user_id,role"),
-      ]);
-      const rolesByUser = new Map<string, string[]>();
-      (roles ?? []).forEach((r) => {
-        const list = rolesByUser.get(r.user_id) ?? [];
-        list.push(r.role);
-        rolesByUser.set(r.user_id, list);
-      });
-      return (profiles ?? []).map((p) => ({
-        id: p.id,
-        full_name: p.full_name,
-        created_at: p.created_at,
-        roles: rolesByUser.get(p.id) ?? [],
-      }));
-    },
+function bucketFor(iso: string): Bucket {
+  const created = new Date(iso);
+  const now = new Date();
+  const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  if (created >= startOfToday) return "today";
+  const weekAgo = new Date(startOfToday); weekAgo.setDate(weekAgo.getDate() - 7);
+  if (created >= weekAgo) return "this_week";
+  const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
+  if (created >= monthStart) return "this_month";
+  return "older";
+}
+
+function CustomersPage() {
+  const { hasAdminAccess, loading } = useRoles();
+  const listFn = useServerFn(listCustomers);
+  const { data: customers = [], isLoading } = useQuery({
+    queryKey: ["admin-customers"],
+    queryFn: () => listFn(),
+    enabled: hasAdminAccess,
   });
 
-  const setRole = async (userId: string, role: "admin" | "staff", grant: boolean) => {
-    if (grant) {
-      const { error } = await supabase.from("user_roles").insert({ user_id: userId, role });
-      if (error && !error.message.includes("duplicate")) return toast.error(error.message);
-    } else {
-      const { error } = await supabase.from("user_roles").delete().eq("user_id", userId).eq("role", role);
-      if (error) return toast.error(error.message);
-    }
-    toast.success("Role updated");
-    qc.invalidateQueries({ queryKey: ["admin-users"] });
-  };
+  const [search, setSearch] = useState("");
+  const [status, setStatus] = useState<"all" | "active" | "banned" | "unverified">("all");
+  const [viewing, setViewing] = useState<CustomerRow | null>(null);
+  const [open, setOpen] = useState<Record<Bucket, boolean>>({
+    today: true, this_week: true, this_month: true, older: false,
+  });
+
+  const filtered = useMemo(() => {
+    const q = search.trim().toLowerCase();
+    return customers.filter((c) => {
+      if (status === "active" && (c.banned || !c.email_confirmed)) return false;
+      if (status === "banned" && !c.banned) return false;
+      if (status === "unverified" && c.email_confirmed) return false;
+      if (!q) return true;
+      return (
+        c.email.toLowerCase().includes(q) ||
+        (c.full_name ?? "").toLowerCase().includes(q) ||
+        (c.phone ?? "").toLowerCase().includes(q)
+      );
+    });
+  }, [customers, search, status]);
+
+  const grouped = useMemo(() => {
+    const g: Record<Bucket, CustomerRow[]> = { today: [], this_week: [], this_month: [], older: [] };
+    filtered.forEach((c) => g[bucketFor(c.created_at)].push(c));
+    return g;
+  }, [filtered]);
+
+  const summary = useMemo(() => {
+    const totalSpent = customers.reduce((s, c) => s + c.total_spent_ghs, 0);
+    const newToday = customers.filter((c) => bucketFor(c.created_at) === "today").length;
+    const newThisWeek = customers.filter((c) => ["today", "this_week"].includes(bucketFor(c.created_at))).length;
+    return { total: customers.length, newToday, newThisWeek, totalSpent };
+  }, [customers]);
+
+  if (loading) return <div className="p-10 text-muted-foreground">Loading…</div>;
+  if (!hasAdminAccess) {
+    return (
+      <div className="rounded-2xl border border-border bg-card p-10 text-center">
+        <h1 className="font-display text-2xl font-bold">Admins only</h1>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="font-display text-3xl font-bold">Users</h1>
-        <p className="text-muted-foreground">Manage roles and access.</p>
+      <div className="flex flex-wrap items-end justify-between gap-3">
+        <div>
+          <h1 className="font-display text-3xl font-bold">Customers</h1>
+          <p className="text-muted-foreground">All registered customers and their order history.</p>
+        </div>
       </div>
 
-      <div className="overflow-x-auto rounded-2xl border border-border bg-card shadow-card">
-        <table className="w-full text-sm">
-          <thead className="bg-secondary/40 text-left text-xs uppercase text-muted-foreground">
-            <tr><th className="px-4 py-2">User</th><th>Roles</th><th>Joined</th><th className="text-right pr-4">Actions</th></tr>
-          </thead>
-          <tbody>
-            {data?.map((u) => {
-              const isAdmin = u.roles.includes("admin");
-              const isStaff = u.roles.includes("staff");
-              return (
-                <tr key={u.id} className="border-t border-border">
-                  <td className="px-4 py-2">
-                    <div className="font-medium">{u.full_name ?? "—"}</div>
-                    <div className="font-mono text-xs text-muted-foreground">{u.id.slice(0, 8)}</div>
-                  </td>
-                  <td>
-                    <div className="flex flex-wrap gap-1">
-                      {u.roles.length === 0 && <span className="text-xs text-muted-foreground">customer</span>}
-                      {u.roles.map((r) => (
-                        <span key={r} className={`rounded-full px-2 py-0.5 text-[10px] font-bold uppercase ${r === "admin" ? "bg-spice text-spice-foreground" : "bg-secondary"}`}>
-                          {r}
-                        </span>
-                      ))}
-                    </div>
-                  </td>
-                  <td className="text-xs text-muted-foreground">{new Date(u.created_at).toLocaleDateString()}</td>
-                  <td className="pr-4 text-right">
-                    <Button variant="ghost" size="sm" onClick={() => setRole(u.id, "staff", !isStaff)}>
-                      {isStaff ? <ShieldOff className="mr-1 h-4 w-4" /> : <Shield className="mr-1 h-4 w-4" />}
-                      {isStaff ? "Revoke staff" : "Make staff"}
-                    </Button>
-                    <Button variant="ghost" size="sm" onClick={() => setRole(u.id, "admin", !isAdmin)}>
-                      {isAdmin ? <ShieldOff className="mr-1 h-4 w-4" /> : <Shield className="mr-1 h-4 w-4" />}
-                      {isAdmin ? "Revoke admin" : "Make admin"}
-                    </Button>
-                  </td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
+      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+        <SummaryCard label="Total customers" value={String(summary.total)} />
+        <SummaryCard label="New today" value={String(summary.newToday)} />
+        <SummaryCard label="New this week" value={String(summary.newThisWeek)} />
+        <SummaryCard label="Lifetime spend" value={formatGHS(summary.totalSpent)} />
       </div>
+
+      <div className="flex flex-wrap items-center gap-3">
+        <div className="relative w-full max-w-sm">
+          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+          <Input
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="Search by name, email, or phone…"
+            className="pl-9"
+          />
+        </div>
+        <Select value={status} onValueChange={(v) => setStatus(v as typeof status)}>
+          <SelectTrigger className="w-48"><SelectValue /></SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">All statuses</SelectItem>
+            <SelectItem value="active">Active</SelectItem>
+            <SelectItem value="unverified">Unverified email</SelectItem>
+            <SelectItem value="banned">Suspended</SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
+
+      {isLoading ? (
+        <div className="p-10 text-center text-muted-foreground">Loading customers…</div>
+      ) : (
+        <div className="space-y-3">
+          {(Object.keys(BUCKET_LABEL) as Bucket[]).map((b) => (
+            <Collapsible key={b} open={open[b]} onOpenChange={(o) => setOpen((s) => ({ ...s, [b]: o }))}>
+              <div className="rounded-2xl border border-border bg-card shadow-card">
+                <CollapsibleTrigger className="flex w-full items-center justify-between px-4 py-3 text-left">
+                  <div className="flex items-center gap-2">
+                    {open[b] ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
+                    <span className="font-display text-base font-bold">{BUCKET_LABEL[b]}</span>
+                    <Badge variant="secondary" className="ml-2">{grouped[b].length}</Badge>
+                  </div>
+                </CollapsibleTrigger>
+                <CollapsibleContent>
+                  {grouped[b].length === 0 ? (
+                    <p className="px-4 pb-4 text-sm text-muted-foreground">No customers in this group.</p>
+                  ) : (
+                    <div className="overflow-x-auto">
+                      <table className="w-full text-sm">
+                        <thead className="bg-secondary/40 text-left text-xs uppercase text-muted-foreground">
+                          <tr>
+                            <th className="px-4 py-2">Customer</th>
+                            <th>Contact</th>
+                            <th>Status</th>
+                            <th>Orders</th>
+                            <th>Spent</th>
+                            <th>Last sign-in</th>
+                            <th className="pr-4 text-right">Actions</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {grouped[b].map((c) => (
+                            <tr key={c.user_id} className="border-t border-border">
+                              <td className="px-4 py-2">
+                                <div className="font-medium">{c.full_name ?? "—"}</div>
+                                <div className="text-xs text-muted-foreground">
+                                  Joined {new Date(c.created_at).toLocaleDateString()}
+                                </div>
+                              </td>
+                              <td>
+                                <div className="text-xs"><Mail className="mr-1 inline h-3 w-3" />{c.email}</div>
+                                {c.phone && <div className="text-xs text-muted-foreground"><Phone className="mr-1 inline h-3 w-3" />{c.phone}</div>}
+                              </td>
+                              <td>
+                                {c.banned ? (
+                                  <Badge variant="destructive"><ShieldAlert className="mr-1 h-3 w-3" />Suspended</Badge>
+                                ) : c.email_confirmed ? (
+                                  <Badge className="bg-green-100 text-green-700 hover:bg-green-100"><ShieldCheck className="mr-1 h-3 w-3" />Active</Badge>
+                                ) : (
+                                  <Badge variant="secondary">Unverified</Badge>
+                                )}
+                              </td>
+                              <td className="tabular-nums">{c.orders_count}</td>
+                              <td className="tabular-nums">{formatGHS(c.total_spent_ghs)}</td>
+                              <td className="text-xs text-muted-foreground">
+                                {c.last_sign_in_at ? new Date(c.last_sign_in_at).toLocaleString() : "Never"}
+                              </td>
+                              <td className="pr-4 text-right">
+                                <Button size="sm" variant="ghost" onClick={() => setViewing(c)}>
+                                  <ShoppingBag className="mr-1 h-3 w-3" /> Orders
+                                </Button>
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  )}
+                </CollapsibleContent>
+              </div>
+            </Collapsible>
+          ))}
+        </div>
+      )}
+
+      <CustomerOrdersDialog customer={viewing} onClose={() => setViewing(null)} />
     </div>
+  );
+}
+
+function SummaryCard({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="rounded-2xl border border-border bg-card p-4 shadow-card">
+      <div className="text-xs text-muted-foreground">{label}</div>
+      <div className="mt-1 font-display text-2xl font-bold tabular-nums">{value}</div>
+    </div>
+  );
+}
+
+function CustomerOrdersDialog({ customer, onClose }: { customer: CustomerRow | null; onClose: () => void }) {
+  const getOrders = useServerFn(getCustomerOrders);
+  const { data: orders = [], isLoading } = useQuery({
+    queryKey: ["customer-orders", customer?.user_id],
+    queryFn: () => getOrders({ data: { user_id: customer!.user_id } }),
+    enabled: !!customer,
+  });
+  return (
+    <Dialog open={!!customer} onOpenChange={(o) => !o && onClose()}>
+      <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
+        <DialogHeader>
+          <DialogTitle>{customer?.full_name ?? customer?.email}</DialogTitle>
+          <DialogDescription>
+            {customer?.email} {customer?.phone ? `• ${customer.phone}` : ""}
+          </DialogDescription>
+        </DialogHeader>
+        {isLoading ? (
+          <p className="text-sm text-muted-foreground">Loading orders…</p>
+        ) : orders.length === 0 ? (
+          <p className="text-sm text-muted-foreground">No orders yet.</p>
+        ) : (
+          <table className="w-full text-sm">
+            <thead className="text-left text-xs uppercase text-muted-foreground">
+              <tr><th className="py-2">Order</th><th>Date</th><th>Status</th><th>Payment</th><th className="text-right">Total</th></tr>
+            </thead>
+            <tbody>
+              {orders.map((o: CustomerOrder) => (
+                <tr key={o.id} className="border-t border-border">
+                  <td className="py-2 font-mono text-xs">#{o.id.slice(0, 8).toUpperCase()}</td>
+                  <td className="text-xs text-muted-foreground">{new Date(o.created_at).toLocaleDateString()}</td>
+                  <td><Badge variant="secondary" className="text-[10px] uppercase">{o.status}</Badge></td>
+                  <td>
+                    <span className={`rounded-full px-2 py-0.5 text-[10px] font-bold uppercase ${o.payment_status === "paid" ? "bg-green-100 text-green-700" : "bg-yellow-100 text-yellow-700"}`}>
+                      {o.payment_status}
+                    </span>
+                  </td>
+                  <td className="text-right tabular-nums">{formatGHS(o.total_ghs)}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )}
+      </DialogContent>
+    </Dialog>
   );
 }
