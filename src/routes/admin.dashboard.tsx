@@ -66,7 +66,7 @@ function AdminOverview() {
       const [orders, products, profiles, items, txns] = await Promise.all([
         supabase.from("orders").select("id,total_ghs,status,payment_status,created_at,full_name").order("created_at", { ascending: false }),
         supabase.rpc("get_admin_products"),
-        supabase.from("profiles").select("id", { count: "exact", head: true }),
+        supabase.from("profiles").select("id,created_at"),
         supabase.from("order_items").select("product_name,product_id,quantity,unit_price_ghs"),
         supabase.from("finance_transactions").select("type,amount_ghs,created_at"),
       ]);
@@ -75,7 +75,8 @@ function AdminOverview() {
         products: products.data ?? [],
         items: items.data ?? [],
         txns: txns.data ?? [],
-        userCount: profiles.count ?? 0,
+        profiles: (profiles.data ?? []) as Array<{ id: string; created_at: string }>,
+        userCount: profiles.data?.length ?? 0,
       };
     },
   });
