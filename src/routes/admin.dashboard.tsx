@@ -58,6 +58,7 @@ function StatCard({
 
 function AdminOverview() {
   const qc = useQueryClient();
+  const { isSuperAdmin } = useRoles();
 
   const { data, isLoading } = useQuery({
     queryKey: ["admin-analytics"],
