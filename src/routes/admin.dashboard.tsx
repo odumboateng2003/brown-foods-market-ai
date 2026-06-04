@@ -173,7 +173,11 @@ function AdminOverview() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="font-display text-3xl font-bold">Analytics dashboard</h1>
-          <p className="text-muted-foreground">Live performance across orders, revenue, profit & inventory.</p>
+          <p className="text-muted-foreground">
+            {isSuperAdmin
+              ? "Live performance across orders, revenue, profit & inventory."
+              : "Live overview of orders, customers & inventory."}
+          </p>
         </div>
         <span className="hidden sm:inline-flex items-center gap-1.5 rounded-full bg-green-500/10 px-3 py-1 text-xs font-medium text-green-700">
           <span className="h-2 w-2 animate-pulse rounded-full bg-green-500" /> Live
@@ -181,13 +185,21 @@ function AdminOverview() {
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <StatCard icon={BadgeCent} label="Revenue (paid)" value={formatGHS(stats.revenue)} hint={`${stats.paid} paid orders`} tone="green" />
-        <StatCard icon={TrendingUp} label="Gross profit" value={formatGHS(stats.grossProfit)} hint={`${stats.margin}% margin`} tone="spice" />
-        <StatCard icon={DollarSign} label="Total cost" value={formatGHS(stats.totalCost)} hint="Cost of goods sold" tone="rose" />
-        <StatCard icon={Boxes} label="Inventory value" value={formatGHS(stats.inventoryValue)} hint={`${stats.inventoryUnits} units in stock`} tone="blue" />
-        <StatCard icon={ShoppingBag} label="Total orders" value={String(data?.orders.length ?? 0)} hint={`${stats.completed} delivered`} tone="spice" />
-        <StatCard icon={Users} label="Customers" value={String(data?.userCount ?? 0)} tone="blue" />
+        {isSuperAdmin && (
+          <>
+            <StatCard icon={BadgeCent} label="Revenue (paid)" value={formatGHS(stats.revenue)} hint={`${stats.paid} paid orders`} tone="green" />
+            <StatCard icon={TrendingUp} label="Gross profit" value={formatGHS(stats.grossProfit)} hint={`${stats.margin}% margin`} tone="spice" />
+            <StatCard icon={DollarSign} label="Total cost" value={formatGHS(stats.totalCost)} hint="Cost of goods sold" tone="rose" />
+            <StatCard icon={Boxes} label="Inventory value" value={formatGHS(stats.inventoryValue)} hint={`${stats.inventoryUnits} units in stock`} tone="blue" />
+          </>
+        )}
+        <StatCard icon={Users} label="Total customers" value={String(data?.userCount ?? 0)} hint={`+${stats.newUsersToday} today`} tone="blue" />
+        <StatCard icon={Users} label="New this week" value={String(stats.newUsersThisWeek)} tone="spice" />
+        <StatCard icon={ShoppingBag} label="Total orders" value={String(data?.orders.length ?? 0)} hint={`${stats.ordersToday} today`} tone="spice" />
         <StatCard icon={Truck} label="Pending deliveries" value={String(stats.pendingDeliveries)} tone="amber" />
+        <StatCard icon={CheckCircle2} label="Delivered" value={String(stats.completed)} tone="green" />
+        <StatCard icon={XCircle} label="Cancelled" value={String(stats.cancelled)} tone="rose" />
+        <StatCard icon={Package} label="Total products" value={String(stats.totalProducts)} tone="blue" />
         <StatCard icon={AlertTriangle} label="Low / out of stock" value={`${stats.lowStock} / ${stats.outOfStock}`} hint={`≤ ${LOW_STOCK_THRESHOLD} units low`} tone="rose" />
       </div>
 
