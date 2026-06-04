@@ -147,11 +147,22 @@ function AdminOverview() {
       ? Math.round(((products.length - outOfStock - lowStock) / products.length) * 100)
       : 100;
 
+    // Date-based counts (always safe to compute)
+    const now = new Date();
+    const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    const weekAgo = new Date(startOfToday); weekAgo.setDate(weekAgo.getDate() - 7);
+    const ordersToday = orders.filter((o) => new Date(o.created_at) >= startOfToday).length;
+    const profiles = data?.profiles ?? [];
+    const newUsersToday = profiles.filter((p) => new Date(p.created_at) >= startOfToday).length;
+    const newUsersThisWeek = profiles.filter((p) => new Date(p.created_at) >= weekAgo).length;
+    const totalProducts = products.length;
+
     return {
       revenue, paid: paid.length, pendingDeliveries, completed, cancelled,
       lowStock, outOfStock, inventoryUnits, inventoryValue,
       grossProfit, totalCost, totalSold, margin,
       statusPie, paymentPie, topProducts, stockHealth,
+      ordersToday, newUsersToday, newUsersThisWeek, totalProducts,
     };
   }, [data]);
 
