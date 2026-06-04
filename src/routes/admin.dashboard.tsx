@@ -11,6 +11,7 @@ import {
 } from "recharts";
 import { supabase } from "@/integrations/supabase/client";
 import { formatGHS } from "@/lib/format";
+import { useRoles } from "@/hooks/use-role";
 
 export const Route = createFileRoute("/admin/dashboard")({ component: AdminOverview });
 
