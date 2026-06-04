@@ -21,7 +21,7 @@ function ProductPage() {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("products")
-        .select("*, categories(name,slug)")
+        .select("id,name,slug,description,price_ghs,sale_price_ghs,image_url,unit,stock,is_active,is_featured,category_id,created_at, categories(name,slug)")
         .eq("slug", slug)
         .maybeSingle();
       if (error) throw error;
