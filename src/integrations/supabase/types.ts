@@ -531,6 +531,40 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      get_admin_products: {
+        Args: never
+        Returns: {
+          category_id: string | null
+          cost_price_ghs: number
+          created_at: string
+          description: string | null
+          id: string
+          image_url: string | null
+          is_active: boolean
+          is_featured: boolean
+          name: string
+          price_ghs: number
+          sale_price_ghs: number | null
+          slug: string
+          stock: number
+          unit: string
+        }[]
+        SetofOptions: {
+          from: "*"
+          to: "products"
+          isOneToOne: false
+          isSetofReturn: true
+        }
+      }
+      get_admin_site_content: {
+        Args: { _key: string }
+        Returns: {
+          draft_content: Json
+          published_at: string
+          published_content: Json
+          updated_at: string
+        }[]
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
