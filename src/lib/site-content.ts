@@ -233,6 +233,49 @@ Questions? Email support@brownfoodsmarket.com.`,
     ],
     notes: "Free delivery on orders over GHS 300 within Greater Accra.",
   },
+  branding: {
+    business_name: "BROWN Foods Market",
+    website_name: "BROWN Foods Market",
+    tagline: "Authentic Ghanaian foodstuffs, delivered to your door.",
+    description:
+      "Shop premium Ghanaian foodstuffs online. Rice, yam, plantain, palm oil, fresh fish and more — delivered across Ghana.",
+    copyright_text: "",
+    footer_text: "",
+    business_address: "Accra, Greater Accra Region, Ghana",
+    contact_email: "support@brownfoodsmarket.com",
+    phone_primary: "+233 24 000 0000",
+    phone_secondary: "",
+
+    favicon_url: "",
+    logo_header_url: "",
+    logo_footer_url: "",
+    logo_mobile_url: "",
+    logo_light_url: "",
+    logo_dark_url: "",
+
+    facebook_url: "",
+    instagram_url: "",
+    twitter_url: "",
+    tiktok_url: "",
+    linkedin_url: "",
+    whatsapp_url: "",
+    youtube_url: "",
+
+    site_title: "BROWN Foods Market — Authentic Ghanaian foodstuffs delivered",
+    meta_title: "BROWN Foods Market — Authentic Ghanaian foodstuffs delivered",
+    meta_description:
+      "Shop premium Ghanaian foodstuffs online. Rice, yam, plantain, palm oil, fresh fish and more — delivered across Ghana.",
+    meta_keywords: "Ghanaian food, foodstuffs, Accra, palm oil, yam, plantain, fish",
+    og_title: "BROWN Foods Market — Authentic Ghanaian foodstuffs delivered",
+    og_description:
+      "Shop premium Ghanaian foodstuffs online. Rice, yam, plantain, palm oil, fresh fish and more — delivered across Ghana.",
+    og_image_url: "",
+
+    primary_color: "#c2410c",
+    secondary_color: "#f5f5f4",
+    accent_color: "#facc15",
+    button_radius: "rounded",
+  },
 };
 
 /* ----------------------------- Hooks ----------------------------- */
