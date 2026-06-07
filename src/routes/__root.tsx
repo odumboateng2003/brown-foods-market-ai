@@ -107,6 +107,7 @@ function RootComponent() {
   const { queryClient } = Route.useRouteContext();
   return (
     <QueryClientProvider client={queryClient}>
+      <BrandingEffect />
       <div className="flex min-h-screen flex-col">
         <SiteHeader />
         <main className="flex-1"><Outlet /></main>
