@@ -84,16 +84,12 @@ function CheckoutPage() {
       toast.error(parsed.error.issues[0]?.message ?? "Please check the form");
       return;
     }
-    toast.info("Payments are currently unavailable while the platform is under development.");
+    toast.info("Online payments are currently unavailable. Please check back soon.");
   };
 
   return (
     <div className="mx-auto max-w-6xl px-4 py-10">
       <h1 className="mb-2 font-display text-3xl font-bold md:text-4xl">Checkout</h1>
-      <div className="mb-6 rounded-xl border border-amber-300 bg-amber-50 px-4 py-3 text-sm text-amber-900">
-        <strong>Payments are currently unavailable</strong> while the platform is under
-        development. You can browse the checkout flow, but no real Mobile Money charges will be made.
-      </div>
       <form onSubmit={onSubmit} className="grid gap-8 lg:grid-cols-[1fr_360px]">
         <div className="space-y-6">
           <section className="rounded-2xl border border-border bg-card p-6 shadow-card">
@@ -181,10 +177,10 @@ function CheckoutPage() {
             </div>
           </dl>
           <Button type="submit" size="lg" variant="hero" className="mt-6 w-full" disabled>
-            Payments unavailable (dev mode)
+            Place order
           </Button>
           <p className="mt-2 text-center text-xs text-muted-foreground">
-            Live checkout will be enabled by the admin before launch.
+            Online payments are currently unavailable. Please check back soon.
           </p>
         </aside>
       </form>
