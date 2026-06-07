@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { useAuth } from "@/hooks/use-auth";
 import { useRoles } from "@/hooks/use-role";
 import { supabase } from "@/integrations/supabase/client";
+import { usePublishedOrDefault } from "@/lib/site-content";
 import {
   DropdownMenu,
   DropdownMenuContent,
