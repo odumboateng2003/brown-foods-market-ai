@@ -19,6 +19,7 @@ import {
 export function SiteHeader() {
   const { user } = useAuth();
   const { isSuperAdmin, hasAdminAccess } = useRoles();
+  const branding = usePublishedOrDefault("branding");
   const navigate = useNavigate();
   const [q, setQ] = useState("");
   const [count, setCount] = useState(0);
