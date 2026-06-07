@@ -1,16 +1,27 @@
 import { Link } from "@tanstack/react-router";
-import { Facebook, Instagram, Twitter, Music2 } from "lucide-react";
+import { Facebook, Instagram, Twitter, Music2, Linkedin, Youtube, MessageCircle } from "lucide-react";
 import { usePublishedOrDefault } from "@/lib/site-content";
 
 export function SiteFooter() {
   const f = usePublishedOrDefault("footer");
   const b = usePublishedOrDefault("business_info");
+  const br = usePublishedOrDefault("branding");
+
   const socials = [
-    { url: b.facebook, icon: Facebook, label: "Facebook" },
-    { url: b.instagram, icon: Instagram, label: "Instagram" },
-    { url: b.twitter, icon: Twitter, label: "Twitter" },
-    { url: b.tiktok, icon: Music2, label: "TikTok" },
+    { url: br.facebook_url || b.facebook, icon: Facebook, label: "Facebook" },
+    { url: br.instagram_url || b.instagram, icon: Instagram, label: "Instagram" },
+    { url: br.twitter_url || b.twitter, icon: Twitter, label: "Twitter" },
+    { url: br.tiktok_url || b.tiktok, icon: Music2, label: "TikTok" },
+    { url: br.linkedin_url, icon: Linkedin, label: "LinkedIn" },
+    { url: br.youtube_url, icon: Youtube, label: "YouTube" },
+    { url: br.whatsapp_url, icon: MessageCircle, label: "WhatsApp" },
   ].filter((s) => s.url);
+
+  const businessName = br.business_name || b.name;
+  const address = br.business_address || b.address;
+  const copyright =
+    br.copyright_text ||
+    `© ${new Date().getFullYear()} ${businessName}${address ? ` · ${address}` : ""}`;
 
   return (
     <footer className="mt-24 border-t border-border bg-secondary/40">
@@ -18,10 +29,19 @@ export function SiteFooter() {
         <div className="grid gap-10 md:grid-cols-4">
           <div className="md:col-span-2">
             <div className="flex items-center gap-2">
-              <span className="grid h-9 w-9 place-items-center rounded-lg bg-gradient-warm font-display text-lg font-bold text-spice-foreground">B</span>
-              <span className="font-display text-xl font-bold">{b.name}</span>
+              {br.logo_footer_url ? (
+                <img src={br.logo_footer_url} alt={businessName} className="h-10 w-auto object-contain" />
+              ) : (
+                <>
+                  <span className="grid h-9 w-9 place-items-center rounded-lg bg-gradient-warm font-display text-lg font-bold text-spice-foreground">B</span>
+                  <span className="font-display text-xl font-bold">{businessName}</span>
+                </>
+              )}
             </div>
-            <p className="mt-4 max-w-md text-sm text-muted-foreground">{f.tagline}</p>
+            <p className="mt-4 max-w-md text-sm text-muted-foreground">{br.tagline || f.tagline}</p>
+            {br.footer_text && (
+              <p className="mt-2 max-w-md text-xs text-muted-foreground">{br.footer_text}</p>
+            )}
             {f.dev_notice && (
               <p className="mt-4 max-w-md text-xs text-amber-700">{f.dev_notice}</p>
             )}
@@ -57,9 +77,7 @@ export function SiteFooter() {
             </ul>
           </div>
         </div>
-        <p className="mt-10 border-t border-border pt-6 text-xs text-muted-foreground">
-          © {new Date().getFullYear()} {b.name}. {b.address && `· ${b.address}`}
-        </p>
+        <p className="mt-10 border-t border-border pt-6 text-xs text-muted-foreground">{copyright}</p>
       </div>
     </footer>
   );

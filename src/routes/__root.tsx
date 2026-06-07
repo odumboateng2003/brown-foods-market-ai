@@ -11,6 +11,7 @@ import { Toaster } from "@/components/ui/sonner";
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
 import { ChatWidget } from "@/components/chat-widget";
+import { BrandingEffect } from "@/components/branding-effect";
 
 
 import appCss from "../styles.css?url";
@@ -106,6 +107,7 @@ function RootComponent() {
   const { queryClient } = Route.useRouteContext();
   return (
     <QueryClientProvider client={queryClient}>
+      <BrandingEffect />
       <div className="flex min-h-screen flex-col">
         <SiteHeader />
         <main className="flex-1"><Outlet /></main>

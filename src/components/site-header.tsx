@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { useAuth } from "@/hooks/use-auth";
 import { useRoles } from "@/hooks/use-role";
 import { supabase } from "@/integrations/supabase/client";
+import { usePublishedOrDefault } from "@/lib/site-content";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -18,6 +19,7 @@ import {
 export function SiteHeader() {
   const { user } = useAuth();
   const { isSuperAdmin, hasAdminAccess } = useRoles();
+  const branding = usePublishedOrDefault("branding");
   const navigate = useNavigate();
   const [q, setQ] = useState("");
   const [count, setCount] = useState(0);
@@ -57,13 +59,26 @@ export function SiteHeader() {
     <header className="sticky top-0 z-40 border-b border-border/60 bg-background/85 backdrop-blur-xl">
       <div className="mx-auto flex h-16 max-w-7xl items-center gap-4 px-4">
         <Link to="/" className="flex items-center gap-2">
-          <span className="grid h-9 w-9 place-items-center rounded-lg bg-gradient-warm font-display text-lg font-bold text-spice-foreground shadow-warm">
-            B
-          </span>
-          <div className="hidden sm:block">
-            <div className="font-display text-lg font-bold leading-none text-foreground">BROWN</div>
-            <div className="text-[10px] font-medium uppercase tracking-[0.18em] text-muted-foreground">Foods Market</div>
-          </div>
+          {branding.logo_header_url || branding.logo_mobile_url ? (
+            <>
+              {branding.logo_mobile_url && (
+                <img src={branding.logo_mobile_url} alt={branding.business_name} className="h-9 w-auto object-contain sm:hidden" />
+              )}
+              {branding.logo_header_url && (
+                <img src={branding.logo_header_url} alt={branding.business_name} className="hidden h-9 w-auto object-contain sm:block" />
+              )}
+            </>
+          ) : (
+            <>
+              <span className="grid h-9 w-9 place-items-center rounded-lg bg-gradient-warm font-display text-lg font-bold text-spice-foreground shadow-warm">
+                B
+              </span>
+              <div className="hidden sm:block">
+                <div className="font-display text-lg font-bold leading-none text-foreground">{branding.business_name?.split(" ")[0] || "BROWN"}</div>
+                <div className="text-[10px] font-medium uppercase tracking-[0.18em] text-muted-foreground">{branding.tagline ? "" : "Foods Market"}</div>
+              </div>
+            </>
+          )}
         </Link>
 
         <form onSubmit={onSearch} className="relative ml-2 hidden flex-1 md:block">
