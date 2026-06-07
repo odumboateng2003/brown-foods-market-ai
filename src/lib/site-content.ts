@@ -58,6 +58,47 @@ export type DeliveryInfo = {
   notes: string;
 };
 
+export type BrandingContent = {
+  business_name: string;
+  website_name: string;
+  tagline: string;
+  description: string;
+  copyright_text: string;
+  footer_text: string;
+  business_address: string;
+  contact_email: string;
+  phone_primary: string;
+  phone_secondary: string;
+
+  favicon_url: string;
+  logo_header_url: string;
+  logo_footer_url: string;
+  logo_mobile_url: string;
+  logo_light_url: string;
+  logo_dark_url: string;
+
+  facebook_url: string;
+  instagram_url: string;
+  twitter_url: string;
+  tiktok_url: string;
+  linkedin_url: string;
+  whatsapp_url: string;
+  youtube_url: string;
+
+  site_title: string;
+  meta_title: string;
+  meta_description: string;
+  meta_keywords: string;
+  og_title: string;
+  og_description: string;
+  og_image_url: string;
+
+  primary_color: string;
+  secondary_color: string;
+  accent_color: string;
+  button_radius: "sharp" | "rounded" | "pill";
+};
+
 export type ContentMap = {
   home_hero: HomeHero;
   about: AboutContent;
@@ -67,6 +108,7 @@ export type ContentMap = {
   footer: FooterContent;
   business_info: BusinessInfo;
   delivery_info: DeliveryInfo;
+  branding: BrandingContent;
 };
 
 export type ContentKey = keyof ContentMap;
