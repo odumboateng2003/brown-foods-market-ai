@@ -10,6 +10,7 @@ import {
   FileText,
   Wallet,
   UserCog,
+  Palette,
 } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
 import { useRoles } from "@/hooks/use-role";
