@@ -99,7 +99,7 @@ export const DEFAULT_CONTENT: ContentMap = {
     ],
     outro_heading: "Built for Ghana, scaling across Africa",
     outro_body:
-      "Our team is currently building and testing the platform. Live payments will be enabled soon. In the meantime, you can browse the catalogue, create an account, and explore how the marketplace works.",
+      "Our team is working to bring you the best marketplace experience for Ghanaian foodstuffs. Browse the catalogue, create an account, and explore everything we have to offer.",
   },
   contact: {
     title: "Contact us",
@@ -123,7 +123,7 @@ We collect information you provide when you create an account, place an order, o
 - To comply with Ghanaian legal and tax obligations.
 
 3. Payment information
-The platform is currently in development and live payments are temporarily disabled.
+We use secure payment processing. When live payments are enabled, your payment details are handled by licensed Mobile Money providers and are never stored on our servers.
 
 4. Sharing
 We do not sell your personal data.
@@ -142,8 +142,8 @@ Questions about this policy? Reach us at privacy@brownfoodsmarket.com.`,
     body: `1. Acceptance of terms
 By using BROWN Foods Market, you agree to these Terms & Conditions and our Privacy Policy.
 
-2. Development status
-The platform is currently in active development. Live payments are temporarily disabled.
+2. Orders & pricing
+Prices are listed in Ghana Cedis (GHS) and may change without notice.
 
 3. Accounts
 You are responsible for keeping your login credentials confidential and for all activity under your account.
@@ -169,8 +169,7 @@ Questions? Email support@brownfoodsmarket.com.`,
   footer: {
     tagline:
       "Authentic Ghanaian foodstuffs, delivered to your door. From Pona yam to scotch bonnet — sourced from trusted local farmers.",
-    dev_notice:
-      "Platform under development. Live payments are temporarily unavailable.",
+    dev_notice: "",
   },
   business_info: {
     name: "BROWN Foods Market",
