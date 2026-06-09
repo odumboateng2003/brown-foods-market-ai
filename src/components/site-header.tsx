@@ -92,9 +92,19 @@ export function SiteHeader() {
         </form>
 
         <nav className="ml-auto flex items-center gap-1">
-          <Link to="/shop" className="hidden rounded-md px-3 py-2 text-sm font-medium text-foreground/80 hover:bg-secondary md:inline-block">
+          <Link to="/shop" className="hidden rounded-md px-3 py-2 text-sm font-semibold uppercase tracking-wider text-foreground/80 hover:text-primary md:inline-block">
             Shop
           </Link>
+          <Link to="/shop" className="hidden rounded-md px-3 py-2 text-sm font-semibold uppercase tracking-wider text-foreground/80 hover:text-primary lg:inline-block">
+            Categories
+          </Link>
+          <Link to="/about" className="hidden rounded-md px-3 py-2 text-sm font-semibold uppercase tracking-wider text-foreground/80 hover:text-primary lg:inline-block">
+            About
+          </Link>
+          <Link to="/contact" className="hidden rounded-md px-3 py-2 text-sm font-semibold uppercase tracking-wider text-foreground/80 hover:text-primary lg:inline-block">
+            Contact
+          </Link>
+
           <Button asChild variant="ghost" size="icon" className="relative">
             <Link to="/cart" aria-label="Cart">
               <ShoppingCart className="h-5 w-5" />

@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Button } from "@/components/ui/button";
 import { usePublishedOrDefault } from "@/lib/site-content";
+import { BackToStore } from "@/components/back-to-store";
 
 export const Route = createFileRoute("/about")({
   component: AboutPage,
@@ -18,7 +19,8 @@ function AboutPage() {
   const v = usePublishedOrDefault("about");
   return (
     <div className="mx-auto max-w-3xl px-4 py-12">
-      <h1 className="font-display text-4xl font-bold">{v.title}</h1>
+      <BackToStore className="mb-6" />
+      <h1 className="font-display text-4xl font-bold text-foreground md:text-5xl">{v.title}</h1>
       <p className="mt-4 text-lg text-muted-foreground">{v.intro}</p>
 
       <section className="prose prose-neutral mt-8 max-w-none text-foreground">
@@ -34,7 +36,7 @@ function AboutPage() {
         <p>{v.outro_body}</p>
       </section>
 
-      <div className="mt-10 flex gap-3">
+      <div className="mt-10 flex flex-wrap gap-3">
         <Button asChild variant="hero"><Link to="/shop">Browse the market</Link></Button>
         <Button asChild variant="outline"><Link to="/contact">Contact us</Link></Button>
       </div>
