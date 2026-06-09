@@ -1,11 +1,12 @@
 import { Link } from "@tanstack/react-router";
-import { Facebook, Instagram, Twitter, Music2, Linkedin, Youtube, MessageCircle } from "lucide-react";
+import { Facebook, Instagram, Twitter, Music2, Linkedin, Youtube, MessageCircle, Phone, Mail, MapPin, Clock } from "lucide-react";
 import { usePublishedOrDefault } from "@/lib/site-content";
 
 export function SiteFooter() {
   const f = usePublishedOrDefault("footer");
   const b = usePublishedOrDefault("business_info");
   const br = usePublishedOrDefault("branding");
+  const c = usePublishedOrDefault("contact");
 
   const socials = [
     { url: br.facebook_url || b.facebook, icon: Facebook, label: "Facebook" },
@@ -18,66 +19,112 @@ export function SiteFooter() {
   ].filter((s) => s.url);
 
   const businessName = br.business_name || b.name;
-  const address = br.business_address || b.address;
+  const address = br.business_address || b.address || c.address;
+  const email = br.contact_email || b.email || c.email;
+  const phone = br.phone_primary || b.phone || c.phone;
+  const hours = c.hours;
   const copyright =
     br.copyright_text ||
-    `© ${new Date().getFullYear()} ${businessName}${address ? ` · ${address}` : ""}`;
+    `© ${new Date().getFullYear()} ${businessName}. All rights reserved.`;
 
   return (
-    <footer className="mt-24 border-t border-border bg-secondary/40">
-      <div className="mx-auto max-w-7xl px-4 py-12">
-        <div className="grid gap-10 md:grid-cols-4">
-          <div className="md:col-span-2">
+    <footer className="mt-24 bg-primary text-primary-foreground">
+      <div className="mx-auto max-w-7xl px-4 py-14">
+        <div className="grid gap-10 md:grid-cols-2 lg:grid-cols-4">
+          {/* Brand + tagline + socials */}
+          <div>
             <div className="flex items-center gap-2">
               {br.logo_footer_url ? (
-                <img src={br.logo_footer_url} alt={businessName} className="h-10 w-auto object-contain" />
+                <img src={br.logo_footer_url} alt={businessName} className="h-12 w-auto object-contain" />
               ) : (
                 <>
-                  <span className="grid h-9 w-9 place-items-center rounded-lg bg-gradient-warm font-display text-lg font-bold text-spice-foreground">B</span>
-                  <span className="font-display text-xl font-bold">{businessName}</span>
+                  <span className="grid h-10 w-10 place-items-center rounded-lg bg-primary-foreground/10 font-display text-lg font-bold">B</span>
+                  <span className="font-display text-xl font-bold uppercase tracking-wide">{businessName}</span>
                 </>
               )}
             </div>
-            <p className="mt-4 max-w-md text-sm text-muted-foreground">{br.tagline || f.tagline}</p>
-            {br.footer_text && (
-              <p className="mt-2 max-w-md text-xs text-muted-foreground">{br.footer_text}</p>
-            )}
-            {f.dev_notice && (
-              <p className="mt-4 max-w-md text-xs text-amber-700">{f.dev_notice}</p>
-            )}
+            <p className="mt-4 text-sm leading-relaxed text-primary-foreground/75">{br.tagline || f.tagline}</p>
             {socials.length > 0 && (
-              <div className="mt-4 flex gap-3">
+              <div className="mt-5 flex gap-2">
                 {socials.map((s) => {
                   const Icon = s.icon;
                   return (
-                    <a key={s.label} href={s.url} target="_blank" rel="noreferrer" aria-label={s.label} className="text-muted-foreground hover:text-foreground">
-                      <Icon className="h-5 w-5" />
+                    <a
+                      key={s.label}
+                      href={s.url}
+                      target="_blank"
+                      rel="noreferrer"
+                      aria-label={s.label}
+                      className="grid h-9 w-9 place-items-center rounded-full bg-primary-foreground/10 text-primary-foreground transition hover:bg-primary-foreground hover:text-primary"
+                    >
+                      <Icon className="h-4 w-4" />
                     </a>
                   );
                 })}
               </div>
             )}
           </div>
+
+          {/* Quick Links */}
           <div>
-            <h4 className="mb-3 text-sm font-semibold">Shop</h4>
-            <ul className="space-y-2 text-sm text-muted-foreground">
-              <li><Link to="/shop" className="hover:text-foreground">All products</Link></li>
-              <li><Link to="/cart" className="hover:text-foreground">Cart</Link></li>
-              <li><Link to="/orders" className="hover:text-foreground">My orders</Link></li>
+            <h4 className="mb-4 text-sm font-bold uppercase tracking-wider text-gold">Quick Links</h4>
+            <ul className="space-y-2.5 text-sm text-primary-foreground/80">
+              <li><Link to="/" className="transition hover:text-primary-foreground">Home</Link></li>
+              <li><Link to="/shop" className="transition hover:text-primary-foreground">Shop</Link></li>
+              <li><Link to="/shop" className="transition hover:text-primary-foreground">Categories</Link></li>
+              <li><Link to="/about" className="transition hover:text-primary-foreground">About Us</Link></li>
+              <li><Link to="/contact" className="transition hover:text-primary-foreground">Contact Us</Link></li>
             </ul>
           </div>
+
+          {/* Customer Service */}
           <div>
-            <h4 className="mb-3 text-sm font-semibold">Company</h4>
-            <ul className="space-y-2 text-sm text-muted-foreground">
-              <li><Link to="/about" className="hover:text-foreground">About us</Link></li>
-              <li><Link to="/contact" className="hover:text-foreground">Contact</Link></li>
-              <li><Link to="/privacy" className="hover:text-foreground">Privacy Policy</Link></li>
-              <li><Link to="/terms" className="hover:text-foreground">Terms &amp; Conditions</Link></li>
-              <li><Link to="/login" className="hover:text-foreground">Sign in</Link></li>
+            <h4 className="mb-4 text-sm font-bold uppercase tracking-wider text-gold">Customer Service</h4>
+            <ul className="space-y-2.5 text-sm text-primary-foreground/80">
+              <li><Link to="/orders" className="transition hover:text-primary-foreground">My Account</Link></li>
+              <li><Link to="/orders" className="transition hover:text-primary-foreground">Track Order</Link></li>
+              <li><Link to="/contact" className="transition hover:text-primary-foreground">FAQs</Link></li>
+              <li><Link to="/contact" className="transition hover:text-primary-foreground">Delivery Information</Link></li>
+              <li><Link to="/terms" className="transition hover:text-primary-foreground">Returns &amp; Refunds</Link></li>
+              <li><Link to="/privacy" className="transition hover:text-primary-foreground">Privacy Policy</Link></li>
+            </ul>
+          </div>
+
+          {/* Contact */}
+          <div>
+            <h4 className="mb-4 text-sm font-bold uppercase tracking-wider text-gold">Contact Us</h4>
+            <ul className="space-y-3 text-sm text-primary-foreground/80">
+              {phone && (
+                <li className="flex items-start gap-2.5">
+                  <Phone className="mt-0.5 h-4 w-4 shrink-0 text-gold" />
+                  <a href={`tel:${phone.replace(/\s+/g, "")}`} className="transition hover:text-primary-foreground">{phone}</a>
+                </li>
+              )}
+              {email && (
+                <li className="flex items-start gap-2.5">
+                  <Mail className="mt-0.5 h-4 w-4 shrink-0 text-gold" />
+                  <a href={`mailto:${email}`} className="break-all transition hover:text-primary-foreground">{email}</a>
+                </li>
+              )}
+              {address && (
+                <li className="flex items-start gap-2.5">
+                  <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-gold" />
+                  <span>{address}</span>
+                </li>
+              )}
+              {hours && (
+                <li className="flex items-start gap-2.5">
+                  <Clock className="mt-0.5 h-4 w-4 shrink-0 text-gold" />
+                  <span>{hours}</span>
+                </li>
+              )}
             </ul>
           </div>
         </div>
-        <p className="mt-10 border-t border-border pt-6 text-xs text-muted-foreground">{copyright}</p>
+
+        <p className="mt-12 border-t border-primary-foreground/15 pt-6 text-center text-xs text-primary-foreground/70">
+          {copyright}
+        </p>
       </div>
     </footer>
   );
