@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { ProductCard, type Product } from "@/components/product-card";
 import { supabase } from "@/integrations/supabase/client";
 import { usePublishedOrDefault } from "@/lib/site-content";
-import heroImg from "@/assets/hero-market.jpg";
+import heroImg from "@/assets/hero-basket.jpg";
 
 export const Route = createFileRoute("/")({
   component: Home,
@@ -44,53 +44,56 @@ function Home() {
     <>
       {/* HERO */}
       <section className="relative overflow-hidden bg-gradient-cream">
-        <div className="mx-auto grid max-w-7xl items-center gap-10 px-4 py-12 md:grid-cols-2 md:py-20">
-          <div className="relative z-10">
-            <span className="inline-flex items-center gap-2 rounded-full border border-spice/20 bg-spice/10 px-3 py-1 text-xs font-medium text-spice">
+        <div className="mx-auto grid max-w-7xl items-center gap-10 px-4 py-14 md:grid-cols-2 md:py-24">
+          <div className="relative z-10 animate-fade-in-up">
+            <span className="inline-flex items-center gap-2 rounded-full border border-primary/15 bg-primary/5 px-3 py-1 text-xs font-medium uppercase tracking-wider text-primary">
               <Sparkles className="h-3.5 w-3.5" /> {hero.eyebrow}
             </span>
-            <h1 className="mt-5 font-display text-4xl font-bold leading-[1.05] text-foreground text-balance md:text-6xl">
-              {hero.title} <span className="bg-gradient-warm bg-clip-text text-transparent">{hero.highlight}</span>, delivered.
+            <h1 className="mt-5 font-display text-5xl font-bold uppercase leading-[1.02] tracking-tight text-foreground text-balance md:text-7xl">
+              {hero.title}{" "}
+              <span className="block text-primary">{hero.highlight}.</span>
             </h1>
-            <p className="mt-5 max-w-lg text-base text-muted-foreground md:text-lg">
+            <p className="mt-6 max-w-lg text-base leading-relaxed text-muted-foreground md:text-lg">
               {hero.subtitle}
             </p>
-            <div className="mt-8 flex flex-wrap gap-3">
+            <div className="mt-8 flex flex-wrap gap-3 animate-fade-in-up animate-delay-200">
               <Button asChild size="xl" variant="hero">
-                <Link to="/shop">{hero.cta_primary} <ArrowRight className="ml-1 h-4 w-4" /></Link>
+                <Link to="/shop">
+                  {hero.cta_primary} <ArrowRight className="ml-1 h-4 w-4" />
+                </Link>
               </Button>
               <Button asChild size="xl" variant="outline">
                 <Link to="/shop">{hero.cta_secondary}</Link>
               </Button>
             </div>
-            <div className="mt-10 grid max-w-md grid-cols-3 gap-4 text-xs">
+            <div className="mt-10 grid max-w-md grid-cols-3 gap-4 text-xs animate-fade-in animate-delay-300">
               {[
                 { icon: Truck, label: "Same-day delivery in Accra" },
                 { icon: ShieldCheck, label: "Trusted local farmers" },
                 { icon: Sparkles, label: "Always fresh, always real" },
               ].map((f) => (
                 <div key={f.label} className="flex flex-col items-start gap-1.5">
-                  <f.icon className="h-4 w-4 text-spice" />
+                  <f.icon className="h-4 w-4 text-primary" />
                   <span className="text-muted-foreground">{f.label}</span>
                 </div>
               ))}
             </div>
           </div>
 
-          <div className="relative">
-            <div className="absolute -inset-4 -z-10 rounded-[2rem] bg-gradient-warm opacity-20 blur-3xl" />
-            <div className="relative overflow-hidden rounded-[2rem] border border-border shadow-warm">
+          <div className="relative animate-fade-in animate-delay-100">
+            <div className="absolute -inset-4 -z-10 rounded-[2rem] bg-gradient-warm opacity-10 blur-3xl" />
+            <div className="relative overflow-hidden rounded-[2rem] border border-border bg-card shadow-warm">
               <img
                 src={heroImg}
-                alt="Vibrant Ghanaian foodstuffs flat-lay"
-                width={1920}
-                height={1080}
-                className="aspect-[4/3] w-full object-cover"
+                alt="Fresh local foodstuffs in a wicker basket"
+                width={1280}
+                height={1024}
+                className="aspect-[5/4] w-full object-cover transition-transform duration-700 hover:scale-[1.02]"
               />
             </div>
             <div className="absolute -bottom-4 -left-4 hidden rounded-2xl border border-border bg-card px-4 py-3 shadow-warm md:block">
-              <div className="text-xs text-muted-foreground">Today's pick</div>
-              <div className="font-display text-lg font-bold">Jollof essentials</div>
+              <div className="text-xs uppercase tracking-wider text-muted-foreground">Today's pick</div>
+              <div className="font-display text-lg font-bold text-primary">Jollof essentials</div>
             </div>
           </div>
         </div>
@@ -100,9 +103,12 @@ function Home() {
       <section className="mx-auto max-w-7xl px-4 py-16">
         <div className="mb-8 flex items-end justify-between">
           <div>
-            <h2 className="font-display text-3xl font-bold md:text-4xl">Shop by category</h2>
+            <h2 className="font-display text-3xl font-bold text-foreground md:text-4xl">Shop by category</h2>
             <p className="mt-1 text-sm text-muted-foreground">Everything you need for your kitchen, in one market.</p>
           </div>
+          <Button asChild variant="ghost" className="hidden md:inline-flex">
+            <Link to="/shop">All categories <ArrowRight className="ml-1 h-4 w-4" /></Link>
+          </Button>
         </div>
         <div className="grid grid-cols-3 gap-3 sm:grid-cols-4 md:grid-cols-6">
           {categories?.map((c) => (
@@ -110,9 +116,9 @@ function Home() {
               key={c.id}
               to="/shop"
               search={{ category: c.slug } as never}
-              className="group flex flex-col items-center gap-2 rounded-2xl border border-border bg-card p-4 text-center shadow-card transition hover:-translate-y-0.5 hover:border-spice/40 hover:shadow-warm"
+              className="group flex flex-col items-center gap-2 rounded-2xl border border-border bg-card p-4 text-center shadow-card transition hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-warm"
             >
-              <span className="grid h-14 w-14 place-items-center rounded-full bg-gradient-cream text-2xl transition group-hover:scale-110">
+              <span className="grid h-14 w-14 place-items-center rounded-full bg-secondary text-2xl transition group-hover:scale-110">
                 {c.icon ?? "🍲"}
               </span>
               <span className="text-xs font-medium text-foreground">{c.name}</span>
@@ -125,7 +131,7 @@ function Home() {
       <section className="mx-auto max-w-7xl px-4 pb-16">
         <div className="mb-8 flex items-end justify-between">
           <div>
-            <h2 className="font-display text-3xl font-bold md:text-4xl">Trending in the market</h2>
+            <h2 className="font-display text-3xl font-bold text-foreground md:text-4xl">Trending in the market</h2>
             <p className="mt-1 text-sm text-muted-foreground">Hand-picked favourites flying off our shelves.</p>
           </div>
           <Button asChild variant="ghost" className="hidden md:inline-flex">
@@ -139,11 +145,11 @@ function Home() {
 
       {/* PROMO */}
       <section className="mx-auto max-w-7xl px-4 pb-20">
-        <div className="overflow-hidden rounded-3xl bg-gradient-warm p-8 text-spice-foreground md:p-14">
+        <div className="overflow-hidden rounded-3xl bg-gradient-warm p-8 text-primary-foreground md:p-14">
           <div className="grid items-center gap-8 md:grid-cols-2">
             <div>
               <h2 className="font-display text-3xl font-bold md:text-5xl">Free delivery on your first order</h2>
-              <p className="mt-3 max-w-md text-spice-foreground/85">
+              <p className="mt-3 max-w-md text-primary-foreground/85">
                 Sign up today and we'll deliver your first basket of fresh foodstuffs anywhere in Greater Accra — on the house.
               </p>
               <Button asChild size="xl" variant="gold" className="mt-6">
@@ -153,7 +159,7 @@ function Home() {
             <div className="hidden md:block">
               <div className="ml-auto grid w-fit grid-cols-3 gap-2 text-5xl">
                 {["🍚","🍠","🍅","🌶️","🐟","🫗"].map((e) => (
-                  <span key={e} className="grid h-20 w-20 place-items-center rounded-2xl bg-spice-foreground/10 backdrop-blur">{e}</span>
+                  <span key={e} className="grid h-20 w-20 place-items-center rounded-2xl bg-primary-foreground/10 backdrop-blur">{e}</span>
                 ))}
               </div>
             </div>
