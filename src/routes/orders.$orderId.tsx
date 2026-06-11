@@ -37,7 +37,14 @@ function OrderPage() {
         .order("created_at", { ascending: false })
         .limit(1)
         .maybeSingle();
-      return { order, items: items ?? [], payment };
+      const { data: profile } = order
+        ? await supabase
+            .from("profiles")
+            .select("customer_code,full_name,phone")
+            .eq("id", order.user_id)
+            .maybeSingle()
+        : { data: null };
+      return { order, items: items ?? [], payment, profile };
     },
     refetchInterval: 4000,
   });
