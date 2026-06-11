@@ -26,6 +26,7 @@ import { Route as AdminIndexRouteImport } from './routes/admin.index'
 import { Route as ProductsSlugRouteImport } from './routes/products.$slug'
 import { Route as OrdersOrderIdRouteImport } from './routes/orders.$orderId'
 import { Route as ApiChatRouteImport } from './routes/api/chat'
+import { Route as AdminWhatsappRouteImport } from './routes/admin.whatsapp'
 import { Route as AdminUsersRouteImport } from './routes/admin.users'
 import { Route as AdminStaffRouteImport } from './routes/admin.staff'
 import { Route as AdminProductsRouteImport } from './routes/admin.products'
@@ -121,6 +122,11 @@ const ApiChatRoute = ApiChatRouteImport.update({
   path: '/api/chat',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminWhatsappRoute = AdminWhatsappRouteImport.update({
+  id: '/whatsapp',
+  path: '/whatsapp',
+  getParentRoute: () => AdminRoute,
+} as any)
 const AdminUsersRoute = AdminUsersRouteImport.update({
   id: '/users',
   path: '/users',
@@ -189,6 +195,7 @@ export interface FileRoutesByFullPath {
   '/admin/products': typeof AdminProductsRoute
   '/admin/staff': typeof AdminStaffRoute
   '/admin/users': typeof AdminUsersRoute
+  '/admin/whatsapp': typeof AdminWhatsappRoute
   '/api/chat': typeof ApiChatRoute
   '/orders/$orderId': typeof OrdersOrderIdRoute
   '/products/$slug': typeof ProductsSlugRoute
@@ -216,6 +223,7 @@ export interface FileRoutesByTo {
   '/admin/products': typeof AdminProductsRoute
   '/admin/staff': typeof AdminStaffRoute
   '/admin/users': typeof AdminUsersRoute
+  '/admin/whatsapp': typeof AdminWhatsappRoute
   '/api/chat': typeof ApiChatRoute
   '/orders/$orderId': typeof OrdersOrderIdRoute
   '/products/$slug': typeof ProductsSlugRoute
@@ -245,6 +253,7 @@ export interface FileRoutesById {
   '/admin/products': typeof AdminProductsRoute
   '/admin/staff': typeof AdminStaffRoute
   '/admin/users': typeof AdminUsersRoute
+  '/admin/whatsapp': typeof AdminWhatsappRoute
   '/api/chat': typeof ApiChatRoute
   '/orders/$orderId': typeof OrdersOrderIdRoute
   '/products/$slug': typeof ProductsSlugRoute
@@ -275,6 +284,7 @@ export interface FileRouteTypes {
     | '/admin/products'
     | '/admin/staff'
     | '/admin/users'
+    | '/admin/whatsapp'
     | '/api/chat'
     | '/orders/$orderId'
     | '/products/$slug'
@@ -302,6 +312,7 @@ export interface FileRouteTypes {
     | '/admin/products'
     | '/admin/staff'
     | '/admin/users'
+    | '/admin/whatsapp'
     | '/api/chat'
     | '/orders/$orderId'
     | '/products/$slug'
@@ -330,6 +341,7 @@ export interface FileRouteTypes {
     | '/admin/products'
     | '/admin/staff'
     | '/admin/users'
+    | '/admin/whatsapp'
     | '/api/chat'
     | '/orders/$orderId'
     | '/products/$slug'
@@ -477,6 +489,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiChatRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/whatsapp': {
+      id: '/admin/whatsapp'
+      path: '/whatsapp'
+      fullPath: '/admin/whatsapp'
+      preLoaderRoute: typeof AdminWhatsappRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/admin/users': {
       id: '/admin/users'
       path: '/users'
@@ -553,6 +572,7 @@ interface AdminRouteChildren {
   AdminProductsRoute: typeof AdminProductsRoute
   AdminStaffRoute: typeof AdminStaffRoute
   AdminUsersRoute: typeof AdminUsersRoute
+  AdminWhatsappRoute: typeof AdminWhatsappRoute
   AdminIndexRoute: typeof AdminIndexRoute
 }
 
@@ -566,6 +586,7 @@ const AdminRouteChildren: AdminRouteChildren = {
   AdminProductsRoute: AdminProductsRoute,
   AdminStaffRoute: AdminStaffRoute,
   AdminUsersRoute: AdminUsersRoute,
+  AdminWhatsappRoute: AdminWhatsappRoute,
   AdminIndexRoute: AdminIndexRoute,
 }
 

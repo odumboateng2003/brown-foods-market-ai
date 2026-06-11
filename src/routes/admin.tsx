@@ -11,6 +11,7 @@ import {
   Wallet,
   UserCog,
   Palette,
+  MessageCircle,
 } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
 import { useRoles } from "@/hooks/use-role";
