@@ -125,7 +125,7 @@ function CustomersPage() {
           <Input
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            placeholder="Search by name, email, or phone…"
+            placeholder="Search by Customer ID, name, email, or phone…"
             className="pl-9"
           />
         </div>
