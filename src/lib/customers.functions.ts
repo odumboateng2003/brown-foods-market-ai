@@ -52,15 +52,21 @@ export const listCustomers = createServerFn({ method: "GET" })
     const customerIds = customers.map((u) => u.id);
 
     const [{ data: profiles }, { data: orders }] = await Promise.all([
-      supabaseAdmin.from("profiles").select("id,full_name").in("id", customerIds.length ? customerIds : ["00000000-0000-0000-0000-000000000000"]),
+      supabaseAdmin.from("profiles").select("id,full_name,phone,customer_code").in("id", customerIds.length ? customerIds : ["00000000-0000-0000-0000-000000000000"]),
       supabaseAdmin
         .from("orders")
         .select("user_id,total_ghs,payment_status")
         .in("user_id", customerIds.length ? customerIds : ["00000000-0000-0000-0000-000000000000"]),
     ]);
 
-    const nameByUser = new Map<string, string | null>();
-    (profiles ?? []).forEach((p) => nameByUser.set(p.id, p.full_name ?? null));
+    const profileByUser = new Map<string, { full_name: string | null; phone: string | null; customer_code: string | null }>();
+    (profiles ?? []).forEach((p) =>
+      profileByUser.set(p.id, {
+        full_name: p.full_name ?? null,
+        phone: p.phone ?? null,
+        customer_code: p.customer_code ?? null,
+      }),
+    );
 
     const aggByUser = new Map<string, { count: number; spent: number }>();
     (orders ?? []).forEach((o) => {
@@ -73,11 +79,13 @@ export const listCustomers = createServerFn({ method: "GET" })
     return customers.map((u) => {
       const meta = (u.user_metadata ?? {}) as { full_name?: string; phone?: string };
       const agg = aggByUser.get(u.id) ?? { count: 0, spent: 0 };
+      const prof = profileByUser.get(u.id);
       return {
         user_id: u.id,
+        customer_code: prof?.customer_code ?? null,
         email: u.email ?? "",
-        full_name: nameByUser.get(u.id) ?? meta.full_name ?? null,
-        phone: u.phone ?? meta.phone ?? null,
+        full_name: prof?.full_name ?? meta.full_name ?? null,
+        phone: prof?.phone ?? u.phone ?? meta.phone ?? null,
         created_at: u.created_at,
         last_sign_in_at: u.last_sign_in_at ?? null,
         email_confirmed: !!u.email_confirmed_at,
