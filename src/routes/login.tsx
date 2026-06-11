@@ -113,10 +113,16 @@ function LoginPage() {
 
         <form onSubmit={submit} className="space-y-4">
           {mode === "signup" && (
-            <div className="space-y-1.5">
-              <Label htmlFor="name">Full name</Label>
-              <Input id="name" value={name} onChange={(e) => setName(e.target.value)} placeholder="Akosua Mensah" required />
-            </div>
+            <>
+              <div className="space-y-1.5">
+                <Label htmlFor="name">Full name</Label>
+                <Input id="name" value={name} onChange={(e) => setName(e.target.value)} placeholder="Akosua Mensah" required />
+              </div>
+              <div className="space-y-1.5">
+                <Label htmlFor="phone">Phone number</Label>
+                <Input id="phone" type="tel" value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="0241234567" required />
+              </div>
+            </>
           )}
           <div className="space-y-1.5">
             <Label htmlFor="email">Email</Label>
