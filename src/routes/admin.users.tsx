@@ -245,7 +245,8 @@ function CustomerOrdersDialog({ customer, onClose }: { customer: CustomerRow | n
         <DialogHeader>
           <DialogTitle>{customer?.full_name ?? customer?.email}</DialogTitle>
           <DialogDescription>
-            {customer?.email} {customer?.phone ? `• ${customer.phone}` : ""}
+            {customer?.customer_code ? <span className="font-mono">{customer.customer_code} • </span> : null}
+            {customer?.email}{customer?.phone ? ` • ${customer.phone}` : ""}
           </DialogDescription>
         </DialogHeader>
         {isLoading ? (
