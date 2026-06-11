@@ -99,6 +99,14 @@ export type BrandingContent = {
   button_radius: "sharp" | "rounded" | "pill";
 };
 
+export type WhatsAppContent = {
+  enabled: boolean;
+  phone_number: string; // digits only with country code, e.g. 233240000000
+  button_text: string;
+  tooltip_text: string;
+  default_message: string;
+};
+
 export type ContentMap = {
   home_hero: HomeHero;
   about: AboutContent;
@@ -109,6 +117,7 @@ export type ContentMap = {
   business_info: BusinessInfo;
   delivery_info: DeliveryInfo;
   branding: BrandingContent;
+  whatsapp: WhatsAppContent;
 };
 
 export type ContentKey = keyof ContentMap;
