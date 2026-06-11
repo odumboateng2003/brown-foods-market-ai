@@ -75,7 +75,8 @@ function CustomersPage() {
       return (
         c.email.toLowerCase().includes(q) ||
         (c.full_name ?? "").toLowerCase().includes(q) ||
-        (c.phone ?? "").toLowerCase().includes(q)
+        (c.phone ?? "").toLowerCase().includes(q) ||
+        (c.customer_code ?? "").toLowerCase().includes(q)
       );
     });
   }, [customers, search, status]);
