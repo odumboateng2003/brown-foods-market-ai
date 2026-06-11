@@ -115,7 +115,9 @@ function RootComponent() {
         <SiteFooter />
       </div>
       <ChatWidget />
+      <WhatsAppButton />
       <Toaster position="top-center" richColors />
+
     </QueryClientProvider>
   );
 }
