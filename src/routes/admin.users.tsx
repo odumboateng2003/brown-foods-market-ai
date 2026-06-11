@@ -162,7 +162,8 @@ function CustomersPage() {
                       <table className="w-full text-sm">
                         <thead className="bg-secondary/40 text-left text-xs uppercase text-muted-foreground">
                           <tr>
-                            <th className="px-4 py-2">Customer</th>
+                            <th className="px-4 py-2">Customer ID</th>
+                            <th>Customer</th>
                             <th>Contact</th>
                             <th>Status</th>
                             <th>Orders</th>
@@ -174,7 +175,8 @@ function CustomersPage() {
                         <tbody>
                           {grouped[b].map((c) => (
                             <tr key={c.user_id} className="border-t border-border">
-                              <td className="px-4 py-2">
+                              <td className="px-4 py-2 font-mono text-xs">{c.customer_code ?? "—"}</td>
+                              <td>
                                 <div className="font-medium">{c.full_name ?? "—"}</div>
                                 <div className="text-xs text-muted-foreground">
                                   Joined {new Date(c.created_at).toLocaleDateString()}
