@@ -51,7 +51,7 @@ function OrderPage() {
 
   if (loading || !data?.order) return <div className="p-20 text-center text-muted-foreground">Loading order…</div>;
 
-  const { order, items, payment } = data;
+  const { order, items, payment, profile } = data;
   const stepIdx = STATUS_STEPS.findIndex((s) => s.id === order.status);
   const isCancelled = order.status === "cancelled";
   const isPaid = order.payment_status === "paid";
@@ -68,6 +68,13 @@ function OrderPage() {
         <p className="mt-2 max-w-lg opacity-90">
           Order <span className="font-mono">#{order.id.slice(0, 8).toUpperCase()}</span> — total {formatGHS(order.total_ghs)}.
         </p>
+        {profile?.customer_code && (
+          <div className="mt-3 inline-flex flex-wrap items-center gap-x-4 gap-y-1 rounded-xl bg-white/15 px-3 py-2 text-xs">
+            <span>Customer ID: <span className="font-mono font-semibold">{profile.customer_code}</span></span>
+            <span>{order.full_name}</span>
+            {order.phone && <span>• {order.phone}</span>}
+          </div>
+        )}
       </div>
 
       <section className="mt-6 rounded-2xl border border-border bg-card p-6 shadow-card">
