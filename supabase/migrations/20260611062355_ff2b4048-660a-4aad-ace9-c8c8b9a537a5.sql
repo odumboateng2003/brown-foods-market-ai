@@ -1,0 +1,1 @@
+REVOKE EXECUTE ON FUNCTION public.generate_customer_code(text, timestamptz) FROM PUBLIC, anon, authenticated;

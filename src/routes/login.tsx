@@ -23,6 +23,7 @@ function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [name, setName] = useState("");
+  const [phone, setPhone] = useState("");
   const [busy, setBusy] = useState(false);
 
   useEffect(() => {
@@ -35,12 +36,17 @@ function LoginPage() {
     setBusy(true);
     try {
       if (mode === "signup") {
+        if (!/^(0|\+233)\d{9}$/.test(phone.trim())) {
+          toast.error("Enter a valid Ghana phone, e.g. 0241234567");
+          setBusy(false);
+          return;
+        }
         const { data, error } = await supabase.auth.signUp({
           email,
           password,
           options: {
             emailRedirectTo: `${window.location.origin}/`,
-            data: { full_name: name },
+            data: { full_name: name, phone: phone.trim() },
           },
         });
         if (error) throw error;
@@ -107,10 +113,16 @@ function LoginPage() {
 
         <form onSubmit={submit} className="space-y-4">
           {mode === "signup" && (
-            <div className="space-y-1.5">
-              <Label htmlFor="name">Full name</Label>
-              <Input id="name" value={name} onChange={(e) => setName(e.target.value)} placeholder="Akosua Mensah" required />
-            </div>
+            <>
+              <div className="space-y-1.5">
+                <Label htmlFor="name">Full name</Label>
+                <Input id="name" value={name} onChange={(e) => setName(e.target.value)} placeholder="Akosua Mensah" required />
+              </div>
+              <div className="space-y-1.5">
+                <Label htmlFor="phone">Phone number</Label>
+                <Input id="phone" type="tel" value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="0241234567" required />
+              </div>
+            </>
           )}
           <div className="space-y-1.5">
             <Label htmlFor="email">Email</Label>

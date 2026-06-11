@@ -356,22 +356,28 @@ export type Database = {
         Row: {
           avatar_url: string | null
           created_at: string
+          customer_code: string | null
           full_name: string | null
           id: string
+          phone: string | null
           updated_at: string
         }
         Insert: {
           avatar_url?: string | null
           created_at?: string
+          customer_code?: string | null
           full_name?: string | null
           id: string
+          phone?: string | null
           updated_at?: string
         }
         Update: {
           avatar_url?: string | null
           created_at?: string
+          customer_code?: string | null
           full_name?: string | null
           id?: string
+          phone?: string | null
           updated_at?: string
         }
         Relationships: []
@@ -531,6 +537,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      generate_customer_code: {
+        Args: { _created_at: string; _full_name: string }
+        Returns: string
+      }
       get_admin_products: {
         Args: never
         Returns: {

@@ -75,7 +75,8 @@ function CustomersPage() {
       return (
         c.email.toLowerCase().includes(q) ||
         (c.full_name ?? "").toLowerCase().includes(q) ||
-        (c.phone ?? "").toLowerCase().includes(q)
+        (c.phone ?? "").toLowerCase().includes(q) ||
+        (c.customer_code ?? "").toLowerCase().includes(q)
       );
     });
   }, [customers, search, status]);
@@ -124,7 +125,7 @@ function CustomersPage() {
           <Input
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            placeholder="Search by name, email, or phone…"
+            placeholder="Search by Customer ID, name, email, or phone…"
             className="pl-9"
           />
         </div>
@@ -161,7 +162,8 @@ function CustomersPage() {
                       <table className="w-full text-sm">
                         <thead className="bg-secondary/40 text-left text-xs uppercase text-muted-foreground">
                           <tr>
-                            <th className="px-4 py-2">Customer</th>
+                            <th className="px-4 py-2">Customer ID</th>
+                            <th>Customer</th>
                             <th>Contact</th>
                             <th>Status</th>
                             <th>Orders</th>
@@ -173,7 +175,8 @@ function CustomersPage() {
                         <tbody>
                           {grouped[b].map((c) => (
                             <tr key={c.user_id} className="border-t border-border">
-                              <td className="px-4 py-2">
+                              <td className="px-4 py-2 font-mono text-xs">{c.customer_code ?? "—"}</td>
+                              <td>
                                 <div className="font-medium">{c.full_name ?? "—"}</div>
                                 <div className="text-xs text-muted-foreground">
                                   Joined {new Date(c.created_at).toLocaleDateString()}
@@ -242,7 +245,8 @@ function CustomerOrdersDialog({ customer, onClose }: { customer: CustomerRow | n
         <DialogHeader>
           <DialogTitle>{customer?.full_name ?? customer?.email}</DialogTitle>
           <DialogDescription>
-            {customer?.email} {customer?.phone ? `• ${customer.phone}` : ""}
+            {customer?.customer_code ? <span className="font-mono">{customer.customer_code} • </span> : null}
+            {customer?.email}{customer?.phone ? ` • ${customer.phone}` : ""}
           </DialogDescription>
         </DialogHeader>
         {isLoading ? (
