@@ -59,8 +59,8 @@ export function ChatWidget() {
               <Sparkles className="h-5 w-5" />
             </div>
             <div>
-              <div className="font-display font-bold leading-tight">Akua</div>
-              <div className="text-xs opacity-90">Your shopping assistant</div>
+              <div className="font-display font-bold leading-tight">Akosua AI Assistant</div>
+              <div className="text-xs opacity-90">Your Browns Local Food Market assistant</div>
             </div>
           </div>
 
