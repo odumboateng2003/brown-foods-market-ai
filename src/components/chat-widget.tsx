@@ -46,7 +46,7 @@ export function ChatWidget() {
     <>
       <button
         onClick={() => setOpen((v) => !v)}
-        aria-label="Open shopping assistant"
+        aria-label="Open Akosua AI Assistant"
         className="fixed bottom-5 right-5 z-50 grid h-14 w-14 place-items-center rounded-full bg-gradient-warm text-spice-foreground shadow-warm transition hover:scale-105"
       >
         {open ? <X className="h-6 w-6" /> : <MessageCircle className="h-6 w-6" />}
@@ -129,7 +129,7 @@ export function ChatWidget() {
               autoFocus
               value={input}
               onChange={(e) => setInput(e.target.value)}
-              placeholder="Ask Akua…"
+              placeholder="Ask Akosua…"
               className="flex-1 rounded-full border border-border bg-background px-4 py-2 text-sm outline-none focus:border-spice"
             />
             <Button type="submit" size="icon" variant="spice" disabled={isBusy}>
