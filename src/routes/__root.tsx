@@ -11,6 +11,7 @@ import { Toaster } from "@/components/ui/sonner";
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
 import { ChatWidget } from "@/components/chat-widget";
+import { WhatsAppButton } from "@/components/whatsapp-button";
 import { BrandingEffect } from "@/components/branding-effect";
 
 
@@ -114,7 +115,9 @@ function RootComponent() {
         <SiteFooter />
       </div>
       <ChatWidget />
+      <WhatsAppButton />
       <Toaster position="top-center" richColors />
+
     </QueryClientProvider>
   );
 }

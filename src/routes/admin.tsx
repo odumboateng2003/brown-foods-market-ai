@@ -11,6 +11,7 @@ import {
   Wallet,
   UserCog,
   Palette,
+  MessageCircle,
 } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
 import { useRoles } from "@/hooks/use-role";
@@ -38,10 +39,11 @@ const NAV: NavItem[] = [
   { to: "/admin/finance", label: "Finance", icon: Wallet, exact: false, superOnly: true },
   { to: "/admin/content", label: "Website Content", icon: FileText, exact: false, superOnly: true },
   { to: "/admin/branding", label: "Branding", icon: Palette, exact: false, superOnly: true },
+  { to: "/admin/whatsapp", label: "WhatsApp", icon: MessageCircle, exact: false, superOnly: true },
   { to: "/admin/staff", label: "Staff Management", icon: UserCog, exact: false, superOnly: true },
 ];
 
-const SUPER_ONLY_PATHS = ["/admin/finance", "/admin/content", "/admin/branding", "/admin/staff"];
+const SUPER_ONLY_PATHS = ["/admin/finance", "/admin/content", "/admin/branding", "/admin/whatsapp", "/admin/staff"];
 
 function AdminLayout() {
   const { user, loading: authLoading } = useAuth();
