@@ -36,12 +36,17 @@ function LoginPage() {
     setBusy(true);
     try {
       if (mode === "signup") {
+        if (!/^(0|\+233)\d{9}$/.test(phone.trim())) {
+          toast.error("Enter a valid Ghana phone, e.g. 0241234567");
+          setBusy(false);
+          return;
+        }
         const { data, error } = await supabase.auth.signUp({
           email,
           password,
           options: {
             emailRedirectTo: `${window.location.origin}/`,
-            data: { full_name: name },
+            data: { full_name: name, phone: phone.trim() },
           },
         });
         if (error) throw error;
