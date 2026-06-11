@@ -283,7 +283,17 @@ Questions? Email support@brownfoodsmarket.com.`,
     primary_color: "#c2410c",
     secondary_color: "#f5f5f4",
     accent_color: "#facc15",
+    primary_color: "#c2410c",
+    secondary_color: "#f5f5f4",
+    accent_color: "#facc15",
     button_radius: "rounded",
+  },
+  whatsapp: {
+    enabled: true,
+    phone_number: "233240000000",
+    button_text: "WhatsApp Support",
+    tooltip_text: "Need help? Chat with us on WhatsApp",
+    default_message: "Hello Browns Local Food Market, I would like to make an enquiry.",
   },
 };
 
