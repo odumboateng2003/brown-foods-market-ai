@@ -68,7 +68,7 @@ export function ChatWidget() {
             {messages.length === 0 && (
               <div className="space-y-3">
                 <div className="rounded-2xl bg-secondary/60 p-3 text-sm">
-                  Akwaaba! I'm Akua. Ask me what to cook tonight, find ingredients, or check your order status.
+                  Hello, I'm Akosua, your Browns Local Food Market assistant. Ask me what to cook tonight, find ingredients, or check your order status.
                 </div>
                 <div className="grid gap-2">
                   {SUGGESTIONS.map((s) => (
