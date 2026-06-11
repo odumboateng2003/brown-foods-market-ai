@@ -4,6 +4,7 @@ import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 
 export type CustomerRow = {
   user_id: string;
+  customer_code: string | null;
   email: string;
   full_name: string | null;
   phone: string | null;
