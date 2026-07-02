@@ -323,14 +323,8 @@ Questions? Email support@brownfoodsmarket.com.`,
   },
 };
 
-/* Add home_media default after the object */
-(DEFAULT_CONTENT as unknown as { home_media: HomeMediaContent }).home_media = {
-  promo_title: "Free delivery on your first order",
-  promo_body:
-    "Sign up today and we'll deliver your first basket of fresh foodstuffs anywhere in Greater Accra — on the house.",
-  promo_cta: "Create your account",
-  promo_tile_images: [],
-};
+
+
 
 
 /* ----------------------------- Hooks ----------------------------- */
