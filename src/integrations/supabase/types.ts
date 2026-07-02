@@ -20,6 +20,7 @@ export type Database = {
           id: string
           product_id: string
           quantity: number
+          updated_at: string
           user_id: string
         }
         Insert: {
@@ -27,6 +28,7 @@ export type Database = {
           id?: string
           product_id: string
           quantity?: number
+          updated_at?: string
           user_id: string
         }
         Update: {
@@ -34,6 +36,7 @@ export type Database = {
           id?: string
           product_id?: string
           quantity?: number
+          updated_at?: string
           user_id?: string
         }
         Relationships: [
@@ -49,24 +52,30 @@ export type Database = {
       categories: {
         Row: {
           created_at: string
+          description: string | null
           icon: string | null
           id: string
+          image_url: string | null
           name: string
           slug: string
           sort_order: number
         }
         Insert: {
           created_at?: string
+          description?: string | null
           icon?: string | null
           id?: string
+          image_url?: string | null
           name: string
           slug: string
           sort_order?: number
         }
         Update: {
           created_at?: string
+          description?: string | null
           icon?: string | null
           id?: string
+          image_url?: string | null
           name?: string
           slug?: string
           sort_order?: number
