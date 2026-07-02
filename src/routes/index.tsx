@@ -11,7 +11,7 @@ export const Route = createFileRoute("/")({
   component: Home,
 });
 
-type Category = { id: string; name: string; slug: string; icon: string | null };
+type Category = { id: string; name: string; slug: string; icon: string | null; image_url: string | null };
 
 function Home() {
   const hero = usePublishedOrDefault("home_hero");
@@ -20,12 +20,13 @@ function Home() {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("categories")
-        .select("id,name,slug,icon")
+        .select("id,name,slug,icon,image_url")
         .order("sort_order");
       if (error) throw error;
       return data as Category[];
     },
   });
+
 
   const { data: featured } = useQuery({
     queryKey: ["featured"],
@@ -118,12 +119,17 @@ function Home() {
               search={{ category: c.slug } as never}
               className="group flex flex-col items-center gap-2 rounded-2xl border border-border bg-card p-4 text-center shadow-card transition hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-warm"
             >
-              <span className="grid h-14 w-14 place-items-center rounded-full bg-secondary text-2xl transition group-hover:scale-110">
-                {c.icon ?? "🍲"}
+              <span className="grid h-14 w-14 place-items-center overflow-hidden rounded-full bg-secondary text-2xl transition group-hover:scale-110">
+                {c.image_url ? (
+                  <img src={c.image_url} alt={c.name} className="h-full w-full object-cover" loading="lazy" />
+                ) : (
+                  c.icon ?? "🍲"
+                )}
               </span>
               <span className="text-xs font-medium text-foreground">{c.name}</span>
             </Link>
           ))}
+
         </div>
       </section>
 
