@@ -147,6 +147,13 @@ export const DEFAULT_CONTENT: ContentMap = {
     cta_primary: "Shop the market",
     cta_secondary: "Browse categories",
   },
+  home_media: {
+    promo_title: "Free delivery on your first order",
+    promo_body:
+      "Sign up today and we'll deliver your first basket of fresh foodstuffs anywhere in Greater Accra — on the house.",
+    promo_cta: "Create your account",
+    promo_tile_images: [],
+  },
   about: {
     title: "About BROWN Foods Market",
     intro:
