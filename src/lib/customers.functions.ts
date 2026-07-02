@@ -28,14 +28,23 @@ async function assertAdminOrStaff(userId: string) {
   return data.some((r) => r.role === "admin");
 }
 
+async function assertSuperAdmin(userId: string) {
+  const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+  const { data, error } = await supabaseAdmin
+    .from("user_roles")
+    .select("role")
+    .eq("user_id", userId)
+    .eq("role", "admin");
+  if (error) throw new Error(error.message);
+  if (!data || data.length === 0) throw new Error("Forbidden: super admin only");
+}
+
 export const listCustomers = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }): Promise<CustomerRow[]> => {
     await assertAdminOrStaff(context.userId);
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
 
-    // Collect every user_id with admin OR staff role — hide them from the
-    // customer list so normal admins can't see Super Admin accounts.
     const { data: staffRoles, error: rolesErr } = await supabaseAdmin
       .from("user_roles")
       .select("user_id,role")
@@ -43,30 +52,25 @@ export const listCustomers = createServerFn({ method: "GET" })
     if (rolesErr) throw new Error(rolesErr.message);
     const staffIds = new Set((staffRoles ?? []).map((r) => r.user_id));
 
-    const { data: usersList, error: usersErr } = await supabaseAdmin.auth.admin.listUsers({
-      perPage: 1000,
-    });
+    const { data: usersList, error: usersErr } = await supabaseAdmin.auth.admin.listUsers({ perPage: 1000 });
     if (usersErr) throw new Error(usersErr.message);
 
     const customers = (usersList?.users ?? []).filter((u) => !staffIds.has(u.id));
     const customerIds = customers.map((u) => u.id);
 
     const [{ data: profiles }, { data: orders }] = await Promise.all([
-      supabaseAdmin.from("profiles").select("id,full_name,phone,customer_code").in("id", customerIds.length ? customerIds : ["00000000-0000-0000-0000-000000000000"]),
-      supabaseAdmin
-        .from("orders")
-        .select("user_id,total_ghs,payment_status")
+      supabaseAdmin.from("profiles").select("id,full_name,phone,customer_code")
+        .in("id", customerIds.length ? customerIds : ["00000000-0000-0000-0000-000000000000"]),
+      supabaseAdmin.from("orders").select("user_id,total_ghs,payment_status")
         .in("user_id", customerIds.length ? customerIds : ["00000000-0000-0000-0000-000000000000"]),
     ]);
 
     const profileByUser = new Map<string, { full_name: string | null; phone: string | null; customer_code: string | null }>();
-    (profiles ?? []).forEach((p) =>
-      profileByUser.set(p.id, {
-        full_name: p.full_name ?? null,
-        phone: p.phone ?? null,
-        customer_code: p.customer_code ?? null,
-      }),
-    );
+    (profiles ?? []).forEach((p) => profileByUser.set(p.id, {
+      full_name: p.full_name ?? null,
+      phone: p.phone ?? null,
+      customer_code: p.customer_code ?? null,
+    }));
 
     const aggByUser = new Map<string, { count: number; spent: number }>();
     (orders ?? []).forEach((o) => {
@@ -124,4 +128,37 @@ export const getCustomerOrders = createServerFn({ method: "POST" })
       .order("created_at", { ascending: false });
     if (error) throw new Error(error.message);
     return (orders ?? []) as CustomerOrder[];
+  });
+
+/* -------- Customer account admin controls (Super Admin only) -------- */
+
+export const sendCustomerPasswordReset = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input) => z.object({ email: z.string().email() }).parse(input))
+  .handler(async ({ data, context }) => {
+    await assertSuperAdmin(context.userId);
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const redirectTo =
+      (process.env.PUBLIC_SITE_URL || process.env.SITE_URL || "") + "/reset-password";
+    const { error } = await supabaseAdmin.auth.admin.generateLink({
+      type: "recovery",
+      email: data.email,
+      options: redirectTo ? { redirectTo } : undefined,
+    });
+    if (error) throw new Error(error.message);
+    return { ok: true };
+  });
+
+export const setCustomerBanned = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input) => z.object({ user_id: z.string().uuid(), banned: z.boolean() }).parse(input))
+  .handler(async ({ data, context }) => {
+    await assertSuperAdmin(context.userId);
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    // "876000h" = 100 years (effective permanent ban); "none" lifts the ban
+    const { error } = await supabaseAdmin.auth.admin.updateUserById(data.user_id, {
+      ban_duration: data.banned ? "876000h" : "none",
+    } as unknown as { ban_duration: string });
+    if (error) throw new Error(error.message);
+    return { ok: true };
   });

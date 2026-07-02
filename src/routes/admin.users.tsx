@@ -1,8 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { useMemo, useState } from "react";
-import { Search, Mail, Phone, ShoppingBag, ChevronDown, ChevronRight, ShieldCheck, ShieldAlert } from "lucide-react";
+import { Search, Mail, Phone, ShoppingBag, ChevronDown, ChevronRight, ShieldCheck, ShieldAlert, KeyRound, Ban, CheckCircle2, MoreHorizontal } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -13,13 +13,19 @@ import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription,
 } from "@/components/ui/dialog";
 import {
+  DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import {
   Collapsible, CollapsibleContent, CollapsibleTrigger,
 } from "@/components/ui/collapsible";
+import { toast } from "sonner";
 import { useRoles } from "@/hooks/use-role";
 import { formatGHS } from "@/lib/format";
 import {
   listCustomers,
   getCustomerOrders,
+  sendCustomerPasswordReset,
+  setCustomerBanned,
   type CustomerRow,
   type CustomerOrder,
 } from "@/lib/customers.functions";
@@ -28,6 +34,7 @@ export const Route = createFileRoute("/admin/users")({
   component: CustomersPage,
   head: () => ({ meta: [{ title: "Customers — Admin" }] }),
 });
+
 
 type Bucket = "today" | "this_week" | "this_month" | "older";
 const BUCKET_LABEL: Record<Bucket, string> = {
@@ -50,13 +57,28 @@ function bucketFor(iso: string): Bucket {
 }
 
 function CustomersPage() {
-  const { hasAdminAccess, loading } = useRoles();
+  const { isSuperAdmin, hasAdminAccess, loading } = useRoles();
   const listFn = useServerFn(listCustomers);
+  const resetFn = useServerFn(sendCustomerPasswordReset);
+  const banFn = useServerFn(setCustomerBanned);
+  const qc = useQueryClient();
   const { data: customers = [], isLoading } = useQuery({
     queryKey: ["admin-customers"],
     queryFn: () => listFn(),
     enabled: hasAdminAccess,
   });
+
+  const resetMut = useMutation({
+    mutationFn: (email: string) => resetFn({ data: { email } }),
+    onSuccess: () => toast.success("Password reset email sent"),
+    onError: (e) => toast.error((e as Error).message),
+  });
+  const banMut = useMutation({
+    mutationFn: ({ user_id, banned }: { user_id: string; banned: boolean }) => banFn({ data: { user_id, banned } }),
+    onSuccess: (_d, v) => { toast.success(v.banned ? "Account disabled" : "Account activated"); qc.invalidateQueries({ queryKey: ["admin-customers"] }); },
+    onError: (e) => toast.error((e as Error).message),
+  });
+
 
   const [search, setSearch] = useState("");
   const [status, setStatus] = useState<"all" | "active" | "banned" | "unverified">("all");
@@ -201,10 +223,50 @@ function CustomersPage() {
                                 {c.last_sign_in_at ? new Date(c.last_sign_in_at).toLocaleString() : "Never"}
                               </td>
                               <td className="pr-4 text-right">
-                                <Button size="sm" variant="ghost" onClick={() => setViewing(c)}>
-                                  <ShoppingBag className="mr-1 h-3 w-3" /> Orders
-                                </Button>
+                                <div className="inline-flex items-center gap-1">
+                                  <Button size="sm" variant="ghost" onClick={() => setViewing(c)}>
+                                    <ShoppingBag className="mr-1 h-3 w-3" /> Orders
+                                  </Button>
+                                  {isSuperAdmin && (
+                                    <DropdownMenu>
+                                      <DropdownMenuTrigger asChild>
+                                        <Button size="icon" variant="ghost" aria-label="Account actions">
+                                          <MoreHorizontal className="h-4 w-4" />
+                                        </Button>
+                                      </DropdownMenuTrigger>
+                                      <DropdownMenuContent align="end">
+                                        <DropdownMenuLabel>Account controls</DropdownMenuLabel>
+                                        <DropdownMenuItem
+                                          disabled={!c.email || resetMut.isPending}
+                                          onClick={() => resetMut.mutate(c.email)}
+                                        >
+                                          <KeyRound className="mr-2 h-4 w-4" /> Send password reset email
+                                        </DropdownMenuItem>
+                                        <DropdownMenuSeparator />
+                                        {c.banned ? (
+                                          <DropdownMenuItem
+                                            disabled={banMut.isPending}
+                                            onClick={() => banMut.mutate({ user_id: c.user_id, banned: false })}
+                                          >
+                                            <CheckCircle2 className="mr-2 h-4 w-4 text-green-600" /> Activate account
+                                          </DropdownMenuItem>
+                                        ) : (
+                                          <DropdownMenuItem
+                                            disabled={banMut.isPending}
+                                            onClick={() => {
+                                              if (confirm(`Disable ${c.email}? They won't be able to sign in.`))
+                                                banMut.mutate({ user_id: c.user_id, banned: true });
+                                            }}
+                                          >
+                                            <Ban className="mr-2 h-4 w-4 text-destructive" /> Disable account
+                                          </DropdownMenuItem>
+                                        )}
+                                      </DropdownMenuContent>
+                                    </DropdownMenu>
+                                  )}
+                                </div>
                               </td>
+
                             </tr>
                           ))}
                         </tbody>

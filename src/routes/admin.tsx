@@ -5,6 +5,7 @@ import {
   Package,
   Tag,
   ShoppingBag,
+  ShoppingCart,
   Users,
   ArrowLeft,
   FileText,
@@ -33,6 +34,7 @@ type NavItem = {
 const NAV: NavItem[] = [
   { to: "/admin/dashboard", label: "Dashboard", icon: LayoutDashboard, exact: true },
   { to: "/admin/orders", label: "Orders", icon: ShoppingBag, exact: false },
+  { to: "/admin/carts", label: "Carts", icon: ShoppingCart, exact: false },
   { to: "/admin/products", label: "Products", icon: Package, exact: false },
   { to: "/admin/categories", label: "Categories", icon: Tag, exact: false },
   { to: "/admin/users", label: "Customers", icon: Users, exact: false },
@@ -42,6 +44,7 @@ const NAV: NavItem[] = [
   { to: "/admin/whatsapp", label: "WhatsApp", icon: MessageCircle, exact: false, superOnly: true },
   { to: "/admin/staff", label: "Staff Management", icon: UserCog, exact: false, superOnly: true },
 ];
+
 
 const SUPER_ONLY_PATHS = ["/admin/finance", "/admin/content", "/admin/branding", "/admin/whatsapp", "/admin/staff"];
 

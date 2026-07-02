@@ -104,11 +104,23 @@ export type WhatsAppContent = {
   phone_number: string; // digits only with country code, e.g. 233240000000
   button_text: string;
   tooltip_text: string;
-  default_message: string;
+  business_name: string;
+  greeting_text: string;
+  welcome_message: string; // shown in the on-site chat bubble before opening WhatsApp
+  default_message: string; // what customer sends when they tap "Start chat"
+  quick_replies: string[]; // one-tap message options
+};
+
+export type HomeMediaContent = {
+  promo_title: string;
+  promo_body: string;
+  promo_cta: string;
+  promo_tile_images: string[]; // up to 6 image URLs replacing emoji tiles
 };
 
 export type ContentMap = {
   home_hero: HomeHero;
+  home_media: HomeMediaContent;
   about: AboutContent;
   contact: ContactContent;
   privacy: LongPage;
@@ -119,6 +131,7 @@ export type ContentMap = {
   branding: BrandingContent;
   whatsapp: WhatsAppContent;
 };
+
 
 export type ContentKey = keyof ContentMap;
 
@@ -133,6 +146,13 @@ export const DEFAULT_CONTENT: ContentMap = {
       "From Pona yam and scotch bonnet to smoked tilapia and red palm oil — authentic Ghanaian foodstuffs, sourced fresh and delivered to your door.",
     cta_primary: "Shop the market",
     cta_secondary: "Browse categories",
+  },
+  home_media: {
+    promo_title: "Free delivery on your first order",
+    promo_body:
+      "Sign up today and we'll deliver your first basket of fresh foodstuffs anywhere in Greater Accra — on the house.",
+    promo_cta: "Create your account",
+    promo_tile_images: [],
   },
   about: {
     title: "About BROWN Foods Market",
@@ -290,9 +310,22 @@ Questions? Email support@brownfoodsmarket.com.`,
     phone_number: "233240000000",
     button_text: "WhatsApp Support",
     tooltip_text: "Need help? Chat with us on WhatsApp",
-    default_message: "Hello Browns Local Food Market, I would like to make an enquiry.",
+    business_name: "Brown's Local Food Market",
+    greeting_text: "Hi there 👋",
+    welcome_message:
+      "Welcome to Brown's Local Food Market.\n\nThank you for contacting us. How may we assist you today?",
+    default_message: "",
+    quick_replies: [
+      "I have a question about my order",
+      "I need help choosing a product",
+      "What are your delivery options?",
+    ],
   },
 };
+
+
+
+
 
 /* ----------------------------- Hooks ----------------------------- */
 

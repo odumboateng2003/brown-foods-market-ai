@@ -36,6 +36,7 @@ import { Route as AdminFinanceRouteImport } from './routes/admin.finance'
 import { Route as AdminDashboardRouteImport } from './routes/admin.dashboard'
 import { Route as AdminContentRouteImport } from './routes/admin.content'
 import { Route as AdminCategoriesRouteImport } from './routes/admin.categories'
+import { Route as AdminCartsRouteImport } from './routes/admin.carts'
 import { Route as AdminBrandingRouteImport } from './routes/admin.branding'
 
 const TermsRoute = TermsRouteImport.update({
@@ -173,6 +174,11 @@ const AdminCategoriesRoute = AdminCategoriesRouteImport.update({
   path: '/categories',
   getParentRoute: () => AdminRoute,
 } as any)
+const AdminCartsRoute = AdminCartsRouteImport.update({
+  id: '/carts',
+  path: '/carts',
+  getParentRoute: () => AdminRoute,
+} as any)
 const AdminBrandingRoute = AdminBrandingRouteImport.update({
   id: '/branding',
   path: '/branding',
@@ -194,6 +200,7 @@ export interface FileRoutesByFullPath {
   '/shop': typeof ShopRoute
   '/terms': typeof TermsRoute
   '/admin/branding': typeof AdminBrandingRoute
+  '/admin/carts': typeof AdminCartsRoute
   '/admin/categories': typeof AdminCategoriesRoute
   '/admin/content': typeof AdminContentRoute
   '/admin/dashboard': typeof AdminDashboardRoute
@@ -223,6 +230,7 @@ export interface FileRoutesByTo {
   '/shop': typeof ShopRoute
   '/terms': typeof TermsRoute
   '/admin/branding': typeof AdminBrandingRoute
+  '/admin/carts': typeof AdminCartsRoute
   '/admin/categories': typeof AdminCategoriesRoute
   '/admin/content': typeof AdminContentRoute
   '/admin/dashboard': typeof AdminDashboardRoute
@@ -254,6 +262,7 @@ export interface FileRoutesById {
   '/shop': typeof ShopRoute
   '/terms': typeof TermsRoute
   '/admin/branding': typeof AdminBrandingRoute
+  '/admin/carts': typeof AdminCartsRoute
   '/admin/categories': typeof AdminCategoriesRoute
   '/admin/content': typeof AdminContentRoute
   '/admin/dashboard': typeof AdminDashboardRoute
@@ -286,6 +295,7 @@ export interface FileRouteTypes {
     | '/shop'
     | '/terms'
     | '/admin/branding'
+    | '/admin/carts'
     | '/admin/categories'
     | '/admin/content'
     | '/admin/dashboard'
@@ -315,6 +325,7 @@ export interface FileRouteTypes {
     | '/shop'
     | '/terms'
     | '/admin/branding'
+    | '/admin/carts'
     | '/admin/categories'
     | '/admin/content'
     | '/admin/dashboard'
@@ -345,6 +356,7 @@ export interface FileRouteTypes {
     | '/shop'
     | '/terms'
     | '/admin/branding'
+    | '/admin/carts'
     | '/admin/categories'
     | '/admin/content'
     | '/admin/dashboard'
@@ -572,6 +584,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminCategoriesRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/admin/carts': {
+      id: '/admin/carts'
+      path: '/carts'
+      fullPath: '/admin/carts'
+      preLoaderRoute: typeof AdminCartsRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/admin/branding': {
       id: '/admin/branding'
       path: '/branding'
@@ -584,6 +603,7 @@ declare module '@tanstack/react-router' {
 
 interface AdminRouteChildren {
   AdminBrandingRoute: typeof AdminBrandingRoute
+  AdminCartsRoute: typeof AdminCartsRoute
   AdminCategoriesRoute: typeof AdminCategoriesRoute
   AdminContentRoute: typeof AdminContentRoute
   AdminDashboardRoute: typeof AdminDashboardRoute
@@ -598,6 +618,7 @@ interface AdminRouteChildren {
 
 const AdminRouteChildren: AdminRouteChildren = {
   AdminBrandingRoute: AdminBrandingRoute,
+  AdminCartsRoute: AdminCartsRoute,
   AdminCategoriesRoute: AdminCategoriesRoute,
   AdminContentRoute: AdminContentRoute,
   AdminDashboardRoute: AdminDashboardRoute,
@@ -634,13 +655,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}

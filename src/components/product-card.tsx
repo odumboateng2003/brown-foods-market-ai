@@ -6,6 +6,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 import { toast } from "sonner";
 import { useNavigate } from "@tanstack/react-router";
+import { StockBadge } from "@/components/stock-badge";
 
 export type Product = {
   id: string;
@@ -20,8 +21,13 @@ export type Product = {
 export function ProductCard({ product }: { product: Product }) {
   const { user } = useAuth();
   const navigate = useNavigate();
+  const outOfStock = (product.stock ?? 0) <= 0;
 
   const addToCart = async () => {
+    if (outOfStock) {
+      toast.error("This item is out of stock");
+      return;
+    }
     if (!user) {
       toast("Sign in to add items to your cart");
       navigate({ to: "/login" });
@@ -62,6 +68,9 @@ export function ProductCard({ product }: { product: Product }) {
         ) : (
           <div className="grid h-full w-full place-items-center text-4xl">🍲</div>
         )}
+        <div className="absolute left-2 top-2">
+          <StockBadge stock={product.stock ?? 0} />
+        </div>
       </Link>
       <div className="flex flex-1 flex-col gap-2 p-4">
         <Link to="/products/$slug" params={{ slug: product.slug }}>
@@ -74,7 +83,7 @@ export function ProductCard({ product }: { product: Product }) {
           <span className="font-display text-lg font-bold text-foreground">
             {formatGHS(product.price_ghs)}
           </span>
-          <Button size="icon" variant="spice" onClick={addToCart} aria-label="Add to cart">
+          <Button size="icon" variant="spice" onClick={addToCart} aria-label="Add to cart" disabled={outOfStock}>
             <Plus className="h-4 w-4" />
           </Button>
         </div>
