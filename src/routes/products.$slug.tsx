@@ -6,6 +6,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 import { formatGHS } from "@/lib/format";
 import { toast } from "sonner";
+import { StockBadge } from "@/components/stock-badge";
+
 
 export const Route = createFileRoute("/products/$slug")({
   component: ProductPage,
@@ -82,16 +84,20 @@ function ProductPage() {
             <span className="font-display text-4xl font-bold">{formatGHS(product.price_ghs)}</span>
             <span className="text-sm text-muted-foreground">per {product.unit}</span>
           </div>
+          <div className="mt-3">
+            <StockBadge stock={product.stock ?? 0} size="md" />
+          </div>
           <p className="mt-6 text-base leading-relaxed text-muted-foreground">{product.description}</p>
 
           <div className="mt-8 flex flex-wrap gap-3">
-            <Button size="xl" variant="hero" onClick={addToCart}>
-              <ShoppingCart className="mr-1 h-5 w-5" /> Add to cart
+            <Button size="xl" variant="hero" onClick={addToCart} disabled={(product.stock ?? 0) <= 0}>
+              <ShoppingCart className="mr-1 h-5 w-5" /> {(product.stock ?? 0) <= 0 ? "Out of stock" : "Add to cart"}
             </Button>
             <Button asChild size="xl" variant="outline">
               <Link to="/cart">View cart</Link>
             </Button>
           </div>
+
 
           <div className="mt-10 grid grid-cols-2 gap-4 border-t border-border pt-6 text-sm">
             <div className="flex items-start gap-3">
