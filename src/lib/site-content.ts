@@ -317,6 +317,8 @@ Questions? Email support@brownfoodsmarket.com.`,
     welcome_message:
       "Welcome to Brown's Local Food Market.\n\nThank you for contacting us. How may we assist you today?",
     default_message: "",
+    business_hours: "Monday – Saturday, 8:00 – 18:00 GMT",
+    auto_reply_text: "",
     quick_replies: [
       "I have a question about my order",
       "I need help choosing a product",
