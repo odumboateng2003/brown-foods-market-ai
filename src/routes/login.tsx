@@ -6,6 +6,7 @@ import { Label } from "@/components/ui/label";
 import { PasswordInput } from "@/components/password-input";
 import { supabase } from "@/integrations/supabase/client";
 import { lovable } from "@/integrations/lovable";
+import { AuthCloseButton } from "@/components/auth-close-button";
 import { toast } from "sonner";
 import { useAuth } from "@/hooks/use-auth";
 import { useRoles } from "@/hooks/use-role";
@@ -90,7 +91,8 @@ function LoginPage() {
 
   return (
     <div className="mx-auto grid min-h-[calc(100vh-200px)] max-w-md place-items-center px-4 py-10">
-      <div className="w-full rounded-3xl border border-border bg-card p-8 shadow-warm">
+      <div className="relative w-full rounded-3xl border border-border bg-card p-8 shadow-warm">
+        <AuthCloseButton />
         <Link to="/" className="mb-6 inline-flex items-center gap-2">
           <span className="grid h-9 w-9 place-items-center rounded-lg bg-gradient-warm font-display text-lg font-bold text-spice-foreground">B</span>
           <span className="font-display text-lg font-bold">BROWN Foods Market</span>

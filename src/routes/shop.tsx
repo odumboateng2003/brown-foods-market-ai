@@ -3,6 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { z } from "zod";
 import { ProductCard, type Product } from "@/components/product-card";
 import { supabase } from "@/integrations/supabase/client";
+import { Breadcrumbs } from "@/components/breadcrumbs";
 import { cn } from "@/lib/utils";
 
 const searchSchema = z.object({
@@ -53,6 +54,13 @@ function Shop() {
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-10">
+      <Breadcrumbs
+        items={[
+          { label: "Shop", to: activeCat ? "/shop" : undefined },
+          ...(activeCat ? [{ label: activeCat.name }] : []),
+          ...(q && !activeCat ? [{ label: `Search: ${q}` }] : []),
+        ]}
+      />
       <div className="mb-8">
         <h1 className="font-display text-3xl font-bold md:text-4xl">
           {activeCat ? activeCat.name : q ? `Results for "${q}"` : "All products"}
@@ -84,7 +92,7 @@ function Shop() {
                 : "border-border bg-card hover:border-spice/40",
             )}
           >
-            <span className="mr-1">{c.icon}</span>{c.name}
+            {c.name}
           </Link>
         ))}
       </div>

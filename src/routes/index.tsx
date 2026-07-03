@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { ArrowRight, Truck, ShieldCheck, Sparkles } from "lucide-react";
+import { ArrowRight, Truck, ShieldCheck, Sparkles, ImageIcon, Leaf, Utensils, Wheat, Fish, Flame } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ProductCard, type Product } from "@/components/product-card";
 import { supabase } from "@/integrations/supabase/client";
@@ -15,6 +15,7 @@ type Category = { id: string; name: string; slug: string; icon: string | null; i
 
 function Home() {
   const hero = usePublishedOrDefault("home_hero");
+  const media = usePublishedOrDefault("home_media");
   const { data: categories } = useQuery({
     queryKey: ["categories"],
     queryFn: async () => {
@@ -119,11 +120,11 @@ function Home() {
               search={{ category: c.slug } as never}
               className="group flex flex-col items-center gap-2 rounded-2xl border border-border bg-card p-4 text-center shadow-card transition hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-warm"
             >
-              <span className="grid h-14 w-14 place-items-center overflow-hidden rounded-full bg-secondary text-2xl transition group-hover:scale-110">
+              <span className="grid h-14 w-14 place-items-center overflow-hidden rounded-full bg-secondary transition group-hover:scale-110">
                 {c.image_url ? (
                   <img src={c.image_url} alt={c.name} className="h-full w-full object-cover" loading="lazy" />
                 ) : (
-                  c.icon ?? "🍲"
+                  <ImageIcon className="h-5 w-5 text-muted-foreground" />
                 )}
               </span>
               <span className="text-xs font-medium text-foreground">{c.name}</span>
@@ -154,19 +155,30 @@ function Home() {
         <div className="overflow-hidden rounded-3xl bg-gradient-warm p-8 text-primary-foreground md:p-14">
           <div className="grid items-center gap-8 md:grid-cols-2">
             <div>
-              <h2 className="font-display text-3xl font-bold md:text-5xl">Free delivery on your first order</h2>
-              <p className="mt-3 max-w-md text-primary-foreground/85">
-                Sign up today and we'll deliver your first basket of fresh foodstuffs anywhere in Greater Accra — on the house.
-              </p>
+              <h2 className="font-display text-3xl font-bold md:text-5xl">{media.promo_title}</h2>
+              <p className="mt-3 max-w-md text-primary-foreground/85">{media.promo_body}</p>
               <Button asChild size="xl" variant="gold" className="mt-6">
-                <Link to="/login">Create your account</Link>
+                <Link to="/login">{media.promo_cta}</Link>
               </Button>
             </div>
             <div className="hidden md:block">
-              <div className="ml-auto grid w-fit grid-cols-3 gap-2 text-5xl">
-                {["🍚","🍠","🍅","🌶️","🐟","🫗"].map((e) => (
-                  <span key={e} className="grid h-20 w-20 place-items-center rounded-2xl bg-primary-foreground/10 backdrop-blur">{e}</span>
-                ))}
+              <div className="ml-auto grid w-fit grid-cols-3 gap-2">
+                {(() => {
+                  const tiles = (media.promo_tile_images ?? []).filter(Boolean).slice(0, 6);
+                  if (tiles.length > 0) {
+                    return tiles.map((src, i) => (
+                      <span key={i} className="h-20 w-20 overflow-hidden rounded-2xl bg-primary-foreground/10 backdrop-blur">
+                        <img src={src} alt="" className="h-full w-full object-cover" loading="lazy" />
+                      </span>
+                    ));
+                  }
+                  const icons = [Wheat, Leaf, Utensils, Flame, Fish, Sparkles];
+                  return icons.map((Icon, i) => (
+                    <span key={i} className="grid h-20 w-20 place-items-center rounded-2xl bg-primary-foreground/10 text-primary-foreground backdrop-blur">
+                      <Icon className="h-8 w-8" />
+                    </span>
+                  ));
+                })()}
               </div>
             </div>
           </div>

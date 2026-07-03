@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 import { formatGHS } from "@/lib/format";
+import { Breadcrumbs } from "@/components/breadcrumbs";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/orders/$orderId")({
@@ -58,6 +59,12 @@ function OrderPage() {
 
   return (
     <div className="mx-auto max-w-4xl px-4 py-10">
+      <Breadcrumbs
+        items={[
+          { label: "My orders", to: "/orders" },
+          { label: `#${order.id.slice(0, 8).toUpperCase()}` },
+        ]}
+      />
       <div className="rounded-3xl bg-gradient-warm p-6 text-spice-foreground shadow-warm md:p-8">
         <div className="flex items-center gap-2 text-sm opacity-90">
           <CheckCircle2 className="h-4 w-4" /> Order placed

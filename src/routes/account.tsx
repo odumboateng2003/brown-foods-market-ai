@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
+import { Breadcrumbs } from "@/components/breadcrumbs";
 import { formatGHS } from "@/lib/format";
 
 export const Route = createFileRoute("/account")({
@@ -101,6 +102,7 @@ function AccountPage() {
 
   return (
     <div className="mx-auto max-w-4xl px-4 py-10">
+      <Breadcrumbs items={[{ label: "My Account" }]} />
       <Link to="/" className="mb-4 inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground">
         <ArrowLeft className="h-4 w-4" /> Back to store
       </Link>

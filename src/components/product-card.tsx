@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { Plus } from "lucide-react";
+import { Plus, ImageIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { formatGHS } from "@/lib/format";
 import { supabase } from "@/integrations/supabase/client";
@@ -66,7 +66,7 @@ export function ProductCard({ product }: { product: Product }) {
             className="h-full w-full object-cover transition duration-500 group-hover:scale-105"
           />
         ) : (
-          <div className="grid h-full w-full place-items-center text-4xl">🍲</div>
+          <div className="grid h-full w-full place-items-center text-muted-foreground"><ImageIcon className="h-10 w-10" /></div>
         )}
         <div className="absolute left-2 top-2">
           <StockBadge stock={product.stock ?? 0} />

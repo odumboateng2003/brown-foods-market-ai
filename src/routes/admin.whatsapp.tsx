@@ -109,15 +109,26 @@ function AdminWhatsApp() {
         </div>
 
         <div className="space-y-2 md:col-span-2">
-          <Label>Welcome message (shown to customer before they chat)</Label>
+          <Label>Welcome message template (staff reference only — never auto-sent)</Label>
           <Textarea rows={4} value={draft.welcome_message} onChange={(e) => set({ welcome_message: e.target.value })}
             placeholder="Welcome to Brown's Local Food Market. How may we assist you today?" />
+          <p className="text-xs text-muted-foreground">
+            This is a guide for your support staff to greet customers. It is <strong>never</strong> inserted into
+            the customer's WhatsApp message box — when a customer taps the button, WhatsApp opens with an empty
+            message so they type their own question.
+          </p>
         </div>
 
-        <div className="space-y-2 md:col-span-2">
-          <Label>Default message when customer taps "Start chat" (optional)</Label>
-          <Textarea rows={2} value={draft.default_message} onChange={(e) => set({ default_message: e.target.value })}
-            placeholder="Leave empty so WhatsApp opens with no pre-filled message." />
+        <div className="space-y-2">
+          <Label>Business hours</Label>
+          <Input value={draft.business_hours ?? ""} onChange={(e) => set({ business_hours: e.target.value })}
+            placeholder="Monday – Saturday, 8:00 – 18:00 GMT" />
+        </div>
+
+        <div className="space-y-2">
+          <Label>Auto-reply text (future WhatsApp API integration)</Label>
+          <Input value={draft.auto_reply_text ?? ""} onChange={(e) => set({ auto_reply_text: e.target.value })}
+            placeholder="Thanks for reaching out! We'll reply shortly." />
         </div>
 
         <div className="space-y-2 md:col-span-2">

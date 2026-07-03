@@ -1,12 +1,13 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { ArrowLeft, ShoppingCart, Truck, ShieldCheck } from "lucide-react";
+import { ArrowLeft, ShoppingCart, Truck, ShieldCheck, ImageIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 import { formatGHS } from "@/lib/format";
 import { toast } from "sonner";
 import { StockBadge } from "@/components/stock-badge";
+import { Breadcrumbs } from "@/components/breadcrumbs";
 
 
 export const Route = createFileRoute("/products/$slug")({
@@ -34,7 +35,13 @@ function ProductPage() {
   if (isLoading) return <div className="p-20 text-center text-muted-foreground">Loading…</div>;
   if (!product) return <div className="p-20 text-center">Product not found.</div>;
 
+  const outOfStock = (product.stock ?? 0) <= 0;
+
   const addToCart = async () => {
+    if (outOfStock) {
+      toast.error("This item is out of stock");
+      return;
+    }
     if (!user) {
       toast("Sign in to add items");
       navigate({ to: "/login" });
@@ -56,6 +63,15 @@ function ProductPage() {
 
   return (
     <div className="mx-auto max-w-6xl px-4 py-10">
+      <Breadcrumbs
+        items={[
+          { label: "Shop", to: "/shop" },
+          ...(product.categories
+            ? [{ label: product.categories.name, to: "/shop", search: { category: product.categories.slug } }]
+            : []),
+          { label: product.name },
+        ]}
+      />
       <Link to="/shop" className="mb-6 inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground">
         <ArrowLeft className="h-4 w-4" /> Back to shop
       </Link>
@@ -65,7 +81,7 @@ function ProductPage() {
           {product.image_url ? (
             <img src={product.image_url} alt={product.name} className="aspect-square w-full object-cover" />
           ) : (
-            <div className="grid aspect-square w-full place-items-center text-7xl">🍲</div>
+            <div className="grid aspect-square w-full place-items-center text-muted-foreground"><ImageIcon className="h-16 w-16" /></div>
           )}
         </div>
 
@@ -90,8 +106,8 @@ function ProductPage() {
           <p className="mt-6 text-base leading-relaxed text-muted-foreground">{product.description}</p>
 
           <div className="mt-8 flex flex-wrap gap-3">
-            <Button size="xl" variant="hero" onClick={addToCart} disabled={(product.stock ?? 0) <= 0}>
-              <ShoppingCart className="mr-1 h-5 w-5" /> {(product.stock ?? 0) <= 0 ? "Out of stock" : "Add to cart"}
+            <Button size="xl" variant="hero" onClick={addToCart} disabled={outOfStock}>
+              <ShoppingCart className="mr-1 h-5 w-5" /> {outOfStock ? "Out of stock" : "Add to cart"}
             </Button>
             <Button asChild size="xl" variant="outline">
               <Link to="/cart">View cart</Link>
