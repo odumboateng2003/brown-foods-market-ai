@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { supabase } from "@/integrations/supabase/client";
+import { AuthCloseButton } from "@/components/auth-close-button";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/forgot-password")({
@@ -35,7 +36,8 @@ function ForgotPasswordPage() {
 
   return (
     <div className="mx-auto grid min-h-[calc(100vh-200px)] max-w-md place-items-center px-4 py-10">
-      <div className="w-full rounded-3xl border border-border bg-card p-8 shadow-warm">
+      <div className="relative w-full rounded-3xl border border-border bg-card p-8 shadow-warm">
+        <AuthCloseButton />
         <h1 className="font-display text-3xl font-bold">Forgot password?</h1>
         <p className="mt-1 text-sm text-muted-foreground">
           Enter your email and we'll send you a secure reset link.
