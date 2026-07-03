@@ -60,7 +60,7 @@ function AdminCategories() {
     const { error } = await supabase.from("categories").insert({
       name,
       slug: slugify(name),
-      icon: String(fd.get("icon") || "🛒"),
+      icon: null,
       description: String(fd.get("description") || "") || null,
       sort_order: Number(fd.get("sort_order") || 0),
     });
@@ -119,9 +119,8 @@ function AdminCategories() {
 
       <form onSubmit={onCreate} className="grid gap-2 rounded-2xl border border-border bg-card p-4 shadow-card md:grid-cols-6">
         <Input name="name" placeholder="Name" required className="md:col-span-2" />
-        <Input name="icon" placeholder="Icon fallback (emoji)" className="md:col-span-1" />
         <Input name="sort_order" type="number" placeholder="Order" className="md:col-span-1" />
-        <Input name="description" placeholder="Short description" className="md:col-span-2" />
+        <Input name="description" placeholder="Short description" className="md:col-span-3" />
         <Button type="submit" variant="spice" className="md:col-span-6 md:w-fit">
           <Plus className="mr-1 h-4 w-4" /> Add category
         </Button>
@@ -130,11 +129,11 @@ function AdminCategories() {
       <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
         {cats?.map((c) => (
           <div key={c.id} className="flex gap-3 rounded-2xl border border-border bg-card p-3 shadow-card">
-            <div className="grid h-20 w-20 shrink-0 place-items-center overflow-hidden rounded-xl bg-secondary text-2xl">
+            <div className="grid h-20 w-20 shrink-0 place-items-center overflow-hidden rounded-xl bg-secondary text-muted-foreground">
               {c.image_url ? (
                 <img src={c.image_url} alt={c.name} className="h-full w-full object-cover" />
               ) : (
-                <span>{c.icon ?? "🛒"}</span>
+                <ImageIcon className="h-6 w-6" />
               )}
             </div>
             <div className="min-w-0 flex-1">
@@ -197,15 +196,9 @@ function AdminCategories() {
                 <label className="mb-1 block text-xs font-medium">Description</label>
                 <Textarea rows={3} value={editing.description ?? ""} onChange={(e) => setEditing({ ...editing, description: e.target.value })} />
               </div>
-              <div className="grid grid-cols-2 gap-2">
-                <div>
-                  <label className="mb-1 block text-xs font-medium">Icon (emoji fallback)</label>
-                  <Input value={editing.icon ?? ""} onChange={(e) => setEditing({ ...editing, icon: e.target.value })} />
-                </div>
-                <div>
-                  <label className="mb-1 block text-xs font-medium">Sort order</label>
-                  <Input type="number" value={editing.sort_order} onChange={(e) => setEditing({ ...editing, sort_order: Number(e.target.value) })} />
-                </div>
+              <div>
+                <label className="mb-1 block text-xs font-medium">Sort order</label>
+                <Input type="number" value={editing.sort_order} onChange={(e) => setEditing({ ...editing, sort_order: Number(e.target.value) })} />
               </div>
 
               <div className="flex justify-end gap-2 pt-2">

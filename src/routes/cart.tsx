@@ -1,10 +1,11 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { Minus, Plus, Trash2, ShoppingBag } from "lucide-react";
+import { Minus, Plus, Trash2, ShoppingBag, ImageIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 import { formatGHS } from "@/lib/format";
+import { Breadcrumbs } from "@/components/breadcrumbs";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/cart")({
@@ -92,13 +93,14 @@ function CartPage() {
 
   return (
     <div className="mx-auto max-w-6xl px-4 py-10">
+      <Breadcrumbs items={[{ label: "Cart" }]} />
       <h1 className="mb-8 font-display text-3xl font-bold md:text-4xl">Your cart</h1>
       <div className="grid gap-8 lg:grid-cols-[1fr_360px]">
         <div className="space-y-3">
           {items.map((row) => row.product && (
             <div key={row.id} className="flex gap-4 rounded-2xl border border-border bg-card p-4 shadow-card">
-              <Link to="/products/$slug" params={{ slug: row.product.slug }} className="h-24 w-24 shrink-0 overflow-hidden rounded-xl bg-secondary">
-                {row.product.image_url && <img src={row.product.image_url} alt={row.product.name} className="h-full w-full object-cover" />}
+              <Link to="/products/$slug" params={{ slug: row.product.slug }} className="grid h-24 w-24 shrink-0 place-items-center overflow-hidden rounded-xl bg-secondary text-muted-foreground">
+                {row.product.image_url ? <img src={row.product.image_url} alt={row.product.name} className="h-full w-full object-cover" /> : <ImageIcon className="h-8 w-8" />}
               </Link>
               <div className="flex flex-1 flex-col">
                 <div className="flex items-start justify-between gap-3">
