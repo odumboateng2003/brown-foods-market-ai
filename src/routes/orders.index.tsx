@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 import { formatGHS } from "@/lib/format";
+import { Breadcrumbs } from "@/components/breadcrumbs";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/orders/")({
@@ -39,6 +40,7 @@ function OrdersList() {
 
   return (
     <div className="mx-auto max-w-4xl px-4 py-10">
+      <Breadcrumbs items={[{ label: "My orders" }]} />
       <h1 className="mb-6 font-display text-3xl font-bold">My orders</h1>
       {orders?.length === 0 && (
         <div className="rounded-2xl border border-dashed border-border p-10 text-center text-muted-foreground">
