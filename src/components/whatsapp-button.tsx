@@ -18,7 +18,9 @@ export function WhatsAppButton() {
   if (!digits) return null;
 
   const startChat = (msg?: string) => {
-    const text = msg || cfg.default_message || "";
+    // Only prefill when the customer explicitly picks a quick reply.
+    // The main "Start chat" button always opens WhatsApp with an empty message box.
+    const text = msg ?? "";
     const href = text
       ? `https://wa.me/${digits}?text=${encodeURIComponent(text)}`
       : `https://wa.me/${digits}`;

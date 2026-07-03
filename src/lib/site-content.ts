@@ -106,9 +106,11 @@ export type WhatsAppContent = {
   tooltip_text: string;
   business_name: string;
   greeting_text: string;
-  welcome_message: string; // shown in the on-site chat bubble before opening WhatsApp
-  default_message: string; // what customer sends when they tap "Start chat"
-  quick_replies: string[]; // one-tap message options
+  welcome_message: string; // template for staff/preview — NEVER auto-inserted into the customer message box
+  default_message: string; // legacy field, kept for backward compatibility (no longer used to prefill)
+  business_hours: string;
+  auto_reply_text: string; // reserved for future WhatsApp API auto-reply integration
+  quick_replies: string[]; // one-tap message options — only sent if the customer taps one
 };
 
 export type HomeMediaContent = {
