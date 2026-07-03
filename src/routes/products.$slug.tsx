@@ -106,8 +106,8 @@ function ProductPage() {
           <p className="mt-6 text-base leading-relaxed text-muted-foreground">{product.description}</p>
 
           <div className="mt-8 flex flex-wrap gap-3">
-            <Button size="xl" variant="hero" onClick={addToCart} disabled={(product.stock ?? 0) <= 0}>
-              <ShoppingCart className="mr-1 h-5 w-5" /> {(product.stock ?? 0) <= 0 ? "Out of stock" : "Add to cart"}
+            <Button size="xl" variant="hero" onClick={addToCart} disabled={outOfStock}>
+              <ShoppingCart className="mr-1 h-5 w-5" /> {outOfStock ? "Out of stock" : "Add to cart"}
             </Button>
             <Button asChild size="xl" variant="outline">
               <Link to="/cart">View cart</Link>
