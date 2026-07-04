@@ -12,6 +12,8 @@ import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Breadcrumbs } from "@/components/breadcrumbs";
 import { formatGHS } from "@/lib/format";
+import { normalizeGhanaPhone, isSyntheticEmail } from "@/lib/phone";
+import { AlertCircle } from "lucide-react";
 
 export const Route = createFileRoute("/account")({
   component: AccountPage,
