@@ -127,6 +127,27 @@ function AccountPage() {
         <form onSubmit={onSave} className="space-y-5 rounded-2xl border border-border bg-card p-6 shadow-card">
           <h2 className="font-display text-xl font-bold">Profile details</h2>
 
+          {missingPhone && (
+            <div className="flex items-start gap-3 rounded-xl border border-amber-300 bg-amber-50 p-4 text-sm text-amber-900">
+              <AlertCircle className="mt-0.5 h-4 w-4 shrink-0" />
+              <div>
+                <div className="font-semibold">Add your phone number</div>
+                <p className="mt-0.5 text-amber-800">
+                  Please add your phone number below. It unlocks phone-based sign-in and helps us reach
+                  you about your orders and deliveries.
+                </p>
+              </div>
+            </div>
+          )}
+
+          {hasSyntheticEmail && (
+            <div className="rounded-xl border border-border bg-secondary/30 p-3 text-xs text-muted-foreground">
+              You signed up with your phone number. You can add a personal email anytime — ask an
+              admin to update it, or continue using phone + password to sign in.
+            </div>
+          )}
+
+
           <div className="grid gap-1.5">
             <Label>Customer ID</Label>
             <div className="flex items-center gap-2">
