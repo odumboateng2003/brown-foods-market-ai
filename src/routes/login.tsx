@@ -1,4 +1,5 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { useServerFn } from "@tanstack/react-start";
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -10,6 +11,8 @@ import { AuthCloseButton } from "@/components/auth-close-button";
 import { toast } from "sonner";
 import { useAuth } from "@/hooks/use-auth";
 import { useRoles } from "@/hooks/use-role";
+import { lookupEmailByPhone, phoneAlreadyRegistered } from "@/lib/auth.functions";
+import { looksLikeEmail, normalizeGhanaPhone, syntheticEmailForPhone } from "@/lib/phone";
 
 export const Route = createFileRoute("/login")({
   component: LoginPage,
@@ -20,16 +23,40 @@ function LoginPage() {
   const navigate = useNavigate();
   const { user } = useAuth();
   const { isAdmin, loading: rolesLoading } = useRoles();
+  const lookupEmail = useServerFn(lookupEmailByPhone);
+  const checkPhone = useServerFn(phoneAlreadyRegistered);
+
   const [mode, setMode] = useState<"signin" | "signup">("signin");
-  const [email, setEmail] = useState("");
+  // Sign in fields
+  const [identifier, setIdentifier] = useState("");
   const [password, setPassword] = useState("");
+  // Sign up fields
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
+  const [email, setEmail] = useState(""); // optional
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [busy, setBusy] = useState(false);
 
   useEffect(() => {
     if (!user || rolesLoading) return;
-    navigate({ to: isAdmin ? "/admin/dashboard" : "/" });
+    // If signed-in customer has no phone, nudge them to /account to add it.
+    if (!isAdmin) {
+      supabase
+        .from("profiles")
+        .select("phone")
+        .eq("id", user.id)
+        .maybeSingle()
+        .then(({ data }) => {
+          if (!data?.phone) {
+            toast.message("Please add your phone number to your profile.");
+            navigate({ to: "/account" });
+          } else {
+            navigate({ to: "/" });
+          }
+        });
+    } else {
+      navigate({ to: "/admin/dashboard" });
+    }
   }, [user, isAdmin, rolesLoading, navigate]);
 
   const submit = async (e: React.FormEvent) => {
@@ -37,31 +64,90 @@ function LoginPage() {
     setBusy(true);
     try {
       if (mode === "signup") {
-        if (!/^(0|\+233)\d{9}$/.test(phone.trim())) {
+        const canonicalPhone = normalizeGhanaPhone(phone);
+        if (!canonicalPhone) {
           toast.error("Enter a valid Ghana phone, e.g. 0241234567");
           setBusy(false);
           return;
         }
+        if (password.length < 6) {
+          toast.error("Password must be at least 6 characters");
+          setBusy(false);
+          return;
+        }
+        if (password !== confirmPassword) {
+          toast.error("Passwords do not match");
+          setBusy(false);
+          return;
+        }
+        const trimmedEmail = email.trim();
+        if (trimmedEmail && !/^\S+@\S+\.\S+$/.test(trimmedEmail)) {
+          toast.error("Enter a valid email address or leave it blank");
+          setBusy(false);
+          return;
+        }
+        // Pre-check phone uniqueness for a friendly error.
+        const { exists } = await checkPhone({ data: { phone: canonicalPhone } });
+        if (exists) {
+          toast.error("This phone number is already registered. Try signing in instead.");
+          setBusy(false);
+          return;
+        }
+        const signupEmail = trimmedEmail || syntheticEmailForPhone(canonicalPhone);
         const { data, error } = await supabase.auth.signUp({
-          email,
+          email: signupEmail,
           password,
           options: {
             emailRedirectTo: `${window.location.origin}/`,
-            data: { full_name: name, phone: phone.trim() },
+            data: { full_name: name, phone: canonicalPhone },
           },
         });
         if (error) throw error;
-        if (data.user && !data.session) {
-          toast.success("Account created — check your email to verify before signing in.");
+        if (data.session) {
+          toast.success("Account created — welcome!");
         } else {
-          toast.success("Account created!");
+          // Auto-confirm should be on; if not, still allow sign-in attempt.
+          const { error: signInErr } = await supabase.auth.signInWithPassword({
+            email: signupEmail,
+            password,
+          });
+          if (signInErr) {
+            toast.success("Account created. Please sign in.");
+            setMode("signin");
+            setIdentifier(trimmedEmail || canonicalPhone);
+          } else {
+            toast.success("Account created — welcome!");
+          }
         }
       } else {
-        const { error } = await supabase.auth.signInWithPassword({ email, password });
+        // Sign in: identifier may be email or phone
+        const raw = identifier.trim();
+        let loginEmail = raw;
+        if (!looksLikeEmail(raw)) {
+          const canonical = normalizeGhanaPhone(raw);
+          if (!canonical) {
+            toast.error("Enter your email address or Ghana phone (e.g. 0241234567)");
+            setBusy(false);
+            return;
+          }
+          const { email: foundEmail } = await lookupEmail({ data: { phone: canonical } });
+          if (!foundEmail) {
+            toast.error("No account found for that phone number.");
+            setBusy(false);
+            return;
+          }
+          loginEmail = foundEmail;
+        }
+        const { error } = await supabase.auth.signInWithPassword({
+          email: loginEmail,
+          password,
+        });
         if (error) {
           if (/confirm/i.test(error.message) || /verified/i.test(error.message)) {
             toast.error("Please verify your email first. Check your inbox for the confirmation link.");
-          } else throw error;
+          } else {
+            toast.error("Invalid credentials. Please check and try again.");
+          }
         } else {
           toast.success("Welcome back!");
           // redirect handled by useEffect once roles resolve
@@ -101,7 +187,9 @@ function LoginPage() {
           {mode === "signin" ? "Welcome back" : "Create your account"}
         </h1>
         <p className="mt-1 text-sm text-muted-foreground">
-          {mode === "signin" ? "Sign in to continue shopping." : "Join thousands enjoying authentic Ghanaian foodstuffs."}
+          {mode === "signin"
+            ? "Sign in with your email or phone number."
+            : "Register with your phone number to start shopping."}
         </p>
 
         <Button onClick={google} disabled={busy} variant="outline" size="lg" className="mt-6 w-full">
@@ -114,7 +202,7 @@ function LoginPage() {
         </div>
 
         <form onSubmit={submit} className="space-y-4">
-          {mode === "signup" && (
+          {mode === "signup" ? (
             <>
               <div className="space-y-1.5">
                 <Label htmlFor="name">Full name</Label>
@@ -123,17 +211,49 @@ function LoginPage() {
               <div className="space-y-1.5">
                 <Label htmlFor="phone">Phone number</Label>
                 <Input id="phone" type="tel" value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="0241234567" required />
+                <p className="text-xs text-muted-foreground">Your phone number is your primary login.</p>
+              </div>
+              <div className="space-y-1.5">
+                <Label htmlFor="email">
+                  Email <span className="text-muted-foreground">(optional)</span>
+                </Label>
+                <Input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="you@example.com" />
+              </div>
+              <div className="space-y-1.5">
+                <Label htmlFor="password">Password</Label>
+                <PasswordInput id="password" value={password} onChange={(e) => setPassword(e.target.value)} minLength={6} required />
+              </div>
+              <div className="space-y-1.5">
+                <Label htmlFor="confirmPassword">Confirm password</Label>
+                <PasswordInput id="confirmPassword" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} minLength={6} required />
+              </div>
+            </>
+          ) : (
+            <>
+              <div className="space-y-1.5">
+                <Label htmlFor="identifier">Email or Phone Number</Label>
+                <Input
+                  id="identifier"
+                  value={identifier}
+                  onChange={(e) => setIdentifier(e.target.value)}
+                  placeholder="you@example.com or 0241234567"
+                  autoComplete="username"
+                  required
+                />
+              </div>
+              <div className="space-y-1.5">
+                <Label htmlFor="password">Password</Label>
+                <PasswordInput
+                  id="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  autoComplete="current-password"
+                  minLength={6}
+                  required
+                />
               </div>
             </>
           )}
-          <div className="space-y-1.5">
-            <Label htmlFor="email">Email</Label>
-            <Input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="you@example.com" required />
-          </div>
-          <div className="space-y-1.5">
-            <Label htmlFor="password">Password</Label>
-            <PasswordInput id="password" value={password} onChange={(e) => setPassword(e.target.value)} minLength={6} required />
-          </div>
           <Button type="submit" disabled={busy} variant="hero" size="lg" className="w-full">
             {busy ? "Please wait…" : mode === "signin" ? "Sign in" : "Create account"}
           </Button>
