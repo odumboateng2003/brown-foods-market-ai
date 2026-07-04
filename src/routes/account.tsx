@@ -79,7 +79,12 @@ function AccountPage() {
 
   const onSave = async (e: React.FormEvent) => {
     e.preventDefault();
-    const parsed = profileSchema.safeParse({ full_name: fullName, phone });
+    const canonical = normalizeGhanaPhone(phone);
+    if (!canonical) {
+      toast.error("Use a Ghana phone, e.g. 0241234567");
+      return;
+    }
+    const parsed = profileSchema.safeParse({ full_name: fullName, phone: canonical });
     if (!parsed.success) {
       toast.error(parsed.error.issues[0]?.message ?? "Check your details");
       return;
@@ -90,7 +95,12 @@ function AccountPage() {
         .from("profiles")
         .update({ full_name: parsed.data.full_name, phone: parsed.data.phone })
         .eq("id", user.id);
-      if (error) throw error;
+      if (error) {
+        if (/duplicate|unique/i.test(error.message)) {
+          throw new Error("That phone number is already linked to another account.");
+        }
+        throw error;
+      }
       toast.success("Profile updated");
       refetch();
     } catch (err) {
@@ -101,6 +111,8 @@ function AccountPage() {
   };
 
   const verified = !!user.email_confirmed_at;
+  const missingPhone = !profile?.phone;
+  const hasSyntheticEmail = isSyntheticEmail(user.email);
 
   return (
     <div className="mx-auto max-w-4xl px-4 py-10">
