@@ -12,6 +12,8 @@ import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Breadcrumbs } from "@/components/breadcrumbs";
 import { formatGHS } from "@/lib/format";
+import { normalizeGhanaPhone, isSyntheticEmail } from "@/lib/phone";
+import { AlertCircle } from "lucide-react";
 
 export const Route = createFileRoute("/account")({
   component: AccountPage,
@@ -77,7 +79,12 @@ function AccountPage() {
 
   const onSave = async (e: React.FormEvent) => {
     e.preventDefault();
-    const parsed = profileSchema.safeParse({ full_name: fullName, phone });
+    const canonical = normalizeGhanaPhone(phone);
+    if (!canonical) {
+      toast.error("Use a Ghana phone, e.g. 0241234567");
+      return;
+    }
+    const parsed = profileSchema.safeParse({ full_name: fullName, phone: canonical });
     if (!parsed.success) {
       toast.error(parsed.error.issues[0]?.message ?? "Check your details");
       return;
@@ -88,7 +95,12 @@ function AccountPage() {
         .from("profiles")
         .update({ full_name: parsed.data.full_name, phone: parsed.data.phone })
         .eq("id", user.id);
-      if (error) throw error;
+      if (error) {
+        if (/duplicate|unique/i.test(error.message)) {
+          throw new Error("That phone number is already linked to another account.");
+        }
+        throw error;
+      }
       toast.success("Profile updated");
       refetch();
     } catch (err) {
@@ -99,6 +111,8 @@ function AccountPage() {
   };
 
   const verified = !!user.email_confirmed_at;
+  const missingPhone = !profile?.phone;
+  const hasSyntheticEmail = isSyntheticEmail(user.email);
 
   return (
     <div className="mx-auto max-w-4xl px-4 py-10">
@@ -112,6 +126,27 @@ function AccountPage() {
       <div className="mt-8 grid gap-6 lg:grid-cols-[1fr_320px]">
         <form onSubmit={onSave} className="space-y-5 rounded-2xl border border-border bg-card p-6 shadow-card">
           <h2 className="font-display text-xl font-bold">Profile details</h2>
+
+          {missingPhone && (
+            <div className="flex items-start gap-3 rounded-xl border border-amber-300 bg-amber-50 p-4 text-sm text-amber-900">
+              <AlertCircle className="mt-0.5 h-4 w-4 shrink-0" />
+              <div>
+                <div className="font-semibold">Add your phone number</div>
+                <p className="mt-0.5 text-amber-800">
+                  Please add your phone number below. It unlocks phone-based sign-in and helps us reach
+                  you about your orders and deliveries.
+                </p>
+              </div>
+            </div>
+          )}
+
+          {hasSyntheticEmail && (
+            <div className="rounded-xl border border-border bg-secondary/30 p-3 text-xs text-muted-foreground">
+              You signed up with your phone number. You can add a personal email anytime — ask an
+              admin to update it, or continue using phone + password to sign in.
+            </div>
+          )}
+
 
           <div className="grid gap-1.5">
             <Label>Customer ID</Label>
