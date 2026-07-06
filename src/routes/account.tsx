@@ -6,6 +6,8 @@ import { toast } from "sonner";
 import { ArrowLeft, BadgeCheck, ShieldAlert, ShieldCheck } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
+import { useCustomerStatus } from "@/hooks/use-customer-status";
+import { SuspendedNotice } from "@/components/suspended-notice";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -27,6 +29,7 @@ const profileSchema = z.object({
 
 function AccountPage() {
   const { user, loading } = useAuth();
+  const { suspended } = useCustomerStatus();
   const navigate = useNavigate();
   const [fullName, setFullName] = useState("");
   const [phone, setPhone] = useState("");
@@ -76,6 +79,8 @@ function AccountPage() {
   if (loading || !user) {
     return <div className="p-20 text-center text-muted-foreground">Loading…</div>;
   }
+  if (suspended) return <SuspendedNotice />;
+
 
   const onSave = async (e: React.FormEvent) => {
     e.preventDefault();

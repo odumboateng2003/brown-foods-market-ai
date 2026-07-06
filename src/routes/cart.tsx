@@ -4,6 +4,8 @@ import { Minus, Plus, Trash2, ShoppingBag, ImageIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
+import { useCustomerStatus } from "@/hooks/use-customer-status";
+import { SuspendedNotice } from "@/components/suspended-notice";
 import { formatGHS } from "@/lib/format";
 import { Breadcrumbs } from "@/components/breadcrumbs";
 import { toast } from "sonner";
@@ -28,6 +30,7 @@ type Row = {
 
 function CartPage() {
   const { user, loading } = useAuth();
+  const { suspended } = useCustomerStatus();
   const qc = useQueryClient();
 
   const { data: items } = useQuery({
@@ -45,6 +48,8 @@ function CartPage() {
   });
 
   if (loading) return <div className="p-20 text-center text-muted-foreground">Loading…</div>;
+  if (user && suspended) return <SuspendedNotice />;
+
 
   if (!user) {
     return (

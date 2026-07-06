@@ -8,6 +8,8 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
+import { useCustomerStatus } from "@/hooks/use-customer-status";
+import { SuspendedNotice } from "@/components/suspended-notice";
 import { formatGHS } from "@/lib/format";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
@@ -36,6 +38,7 @@ const schema = z.object({
 
 function CheckoutPage() {
   const { user, loading } = useAuth();
+  const { suspended } = useCustomerStatus();
   const navigate = useNavigate();
   const [provider, setProvider] = useState<Provider>("mtn");
 
@@ -57,6 +60,8 @@ function CheckoutPage() {
     navigate({ to: "/login" });
     return null;
   }
+  if (suspended) return <SuspendedNotice />;
+
 
   const subtotal =
     items?.reduce(

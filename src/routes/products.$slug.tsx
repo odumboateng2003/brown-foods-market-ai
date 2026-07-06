@@ -4,6 +4,7 @@ import { ArrowLeft, ShoppingCart, Truck, ShieldCheck, ImageIcon } from "lucide-r
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
+import { useCustomerStatus, SUSPENDED_MESSAGE } from "@/hooks/use-customer-status";
 import { formatGHS } from "@/lib/format";
 import { toast } from "sonner";
 import { StockBadge } from "@/components/stock-badge";
@@ -17,6 +18,7 @@ export const Route = createFileRoute("/products/$slug")({
 function ProductPage() {
   const { slug } = Route.useParams();
   const { user } = useAuth();
+  const { suspended } = useCustomerStatus();
   const navigate = useNavigate();
 
   const { data: product, isLoading } = useQuery({
@@ -45,6 +47,10 @@ function ProductPage() {
     if (!user) {
       toast("Sign in to add items");
       navigate({ to: "/login" });
+      return;
+    }
+    if (suspended) {
+      toast.error(SUSPENDED_MESSAGE);
       return;
     }
     const { data: existing } = await supabase
