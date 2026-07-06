@@ -1,171 +1,307 @@
-Browns Local Food Market
+# 🛒 Brown's Local Food Market
 
-A modern Ghanaian e-commerce marketplace platform focused on local food products, groceries, and household essentials. Built with a powerful admin dashboard, real-time analytics, inventory management, and a scalable content management system.
+Brown's Local Food Market is a modern Ghanaian e-commerce platform designed to bring traditional local food markets into the digital world. The platform allows customers to browse, search, and purchase fresh local food products online while providing administrators with powerful tools to manage products, customers, orders, website content, and AI-powered customer support.
 
-🌍 About The Project
+The project focuses on creating a user-friendly, responsive, and scalable online shopping experience inspired by modern e-commerce platforms such as Amazon, Shopify, and Jumia while serving the Ghanaian market.
 
-Browns Local Food Market is a modern online marketplace designed to help customers easily purchase local Ghanaian food products and essentials online.
+---
 
-The platform includes:
+## 🌍 Project Goal
 
-Product management
-Inventory tracking
-Financial analytics
-Website content management
-Admin dashboard
-Customer management
-Delivery tracking
-Secure authentication system
+The aim of this project is to:
 
-The project is designed to scale into a large Ghanaian e-commerce ecosystem.
+- Digitize the traditional Ghanaian local food market.
+- Enable customers to shop for local food items online.
+- Improve accessibility to fresh food products.
+- Simplify order management.
+- Provide an intelligent shopping assistant.
+- Offer a complete content management system for business owners.
 
-✨ Features
-🛒 E-Commerce Features
-Product listings
-Product categories
-Featured products
-Product search
-Inventory management
-Stock tracking
-Sale and discount pricing
-Responsive shopping experience
-👨‍💼 Super Admin Dashboard
+---
 
-The platform includes a powerful admin dashboard that allows administrators to manage the website without editing code.
+# 🚀 Current Features
 
-Admin Features
-Add/Edit/Delete products
-Change product prices instantly
-Upload product images
-Manage categories
-Track inventory
-Manage deliveries
-Customer management
-Order management
-Financial tracking
-Business analytics
-📊 Real-Time Analytics Dashboard
+## 🛍 Customer Features
 
-The dashboard includes:
+- Customer Registration
+- Customer Login
+- Secure Authentication
+- Password Reset
+- Product Search
+- Product Categories
+- Product Filtering
+- Product Details
+- Shopping Cart
+- Wishlist (if enabled)
+- Responsive Design
+- Mobile Friendly Interface
+- Live Stock Availability
+- Featured Products
+- Product Recommendations
+- Customer Profile
+- Order Tracking
+- WhatsApp Customer Support
+- AI Shopping Assistant (Akosua)
 
-Live pie charts
-Revenue analytics
-Profit & loss tracking
-Customer statistics
-Product statistics
-Delivery analytics
-Inventory analytics
-Most purchased products
-Business performance tracking
-💰 Financial Management System
+---
 
-The platform includes a built-in business finance system.
+## 🤖 Akosua AI Shopping Assistant
 
-Features
-Cost price tracking
-Selling price tracking
-Profit calculations
-Revenue management
-Expense tracking
-Reinvestment fund system
-Operational budget tracking
-Revenue projections
-🧾 Website Content Management System (CMS)
+Akosua provides intelligent shopping assistance by helping customers:
 
-Admins can manage website content directly from the dashboard.
+- Find products
+- Answer shopping questions
+- Recommend products
+- Guide customers through purchases
+- Use live product information
+- Understand website content
+- Respond using updated CMS information
 
-Editable Sections
-Homepage
-About Us
-Contact Us
-Privacy Policy
-Terms & Conditions
-FAQ
-Footer content
-Business information
-Social media links
+Guest users can chat without signing in while registered customers enjoy personalized shopping assistance.
 
-No coding is required for content updates.
+---
 
-🔐 Authentication & Security
-Secure login system
-Admin role protection
-Protected admin routes
-Password visibility toggle
-Password reset system
-Session management
-📱 Responsive Design
-Mobile-friendly
-Tablet responsive
-Desktop optimized
-Modern UI/UX
-Dark mode support
-🏗️ Tech Stack
+## 📦 Product Management
 
-Frontend:
+Administrators can:
 
-React
-TypeScript
-Tailwind CSS
+- Add Products
+- Edit Products
+- Delete Products
+- Upload Product Images
+- Manage Product Categories
+- Update Prices
+- Update Stock Quantities
+- Mark Featured Products
+- Activate/Deactivate Products
 
-Backend:
+---
 
-Supabase
+## 🗂 Category Management
 
-Authentication:
+- Create Categories
+- Edit Categories
+- Upload Category Images
+- Category Descriptions
+- Category Status
+- Dynamic Category Images across the website
+- CMS-controlled category management
 
-Supabase Auth
+---
 
-Database:
+## 👥 Customer Management
 
-PostgreSQL
+Super Admin features include:
 
-Charts & Analytics:
+- View Customers
+- Edit Customer Profiles
+- Suspend Customers
+- Reactivate Customers
+- Reset Customer Passwords
+- Customer Search
+- Customer Filters
+- View Customer Orders
+- View Shopping Cart
+- View Customer Activity
+- Soft Delete Customers
+- Permanent Delete Customers
 
-Real-time analytics dashboard
-Live pie chart visualizations
-🚧 Development Status
+---
 
-The platform is currently under active development.
+## 👨‍💼 Staff Management
 
-Current Development Notes
-Live payments are temporarily disabled
-Sandbox/testing mode enabled
-Hubtel payment integration planned for future deployment
-🔮 Future Features
-Hubtel payment integration
-Mobile Money payments
-AI-powered customer support
-WhatsApp automation
-Delivery rider management
-Multi-vendor marketplace support
-Advanced business analytics
-Mobile app version
-📦 Installation
-git clone https://github.com/yourusername/browns-local-food-market.git
-cd browns-local-food-market
-npm install
-npm run dev
-🔑 Environment Variables
+- Super Admin
+- Normal Admin
+- Staff Roles
+- Role-Based Permissions
+- Staff Suspension
+- Staff Removal
+- Password Reset
 
-Create a .env file and add:
+---
 
-VITE_SUPABASE_URL=your_supabase_url
-VITE_SUPABASE_ANON_KEY=your_supabase_key
+## 📊 Admin Dashboard
 
-Future payment integration variables:
+The dashboard provides:
 
-HUBTEL_CLIENT_ID=
-HUBTEL_CLIENT_SECRET=
-HUBTEL_WEBHOOK_SECRET=
-📄 License
+- Business Statistics
+- Product Statistics
+- Customer Statistics
+- Sales Analytics
+- Order Analytics
+- Inventory Monitoring
+- Customer Management
+- Staff Management
+- Website Management
+- AI Management
 
-This project is licensed for educational and business development purposes.
+---
 
-👨‍💻 Developer
+## 🌐 Website Content Management (CMS)
 
-Developed by Gideon Odum-Boateng.
+The CMS allows administrators to manage website content without editing code.
 
-🇬🇭 Vision
+Editable sections include:
 
-To build one of the leading modern Ghanaian digital marketplaces focused on local commerce, accessibility, and scalable business technology.
+- Homepage
+- Hero Section
+- Business Information
+- About Page
+- Contact Information
+- Homepage Features
+- Categories
+- Images
+- Banners
+- Delivery Information
+- WhatsApp Settings
+- AI Content Source
+- FAQs
+- Policies
+
+---
+
+## 💬 WhatsApp Integration
+
+Customers can contact Brown's Local Food Market directly through WhatsApp.
+
+Features include:
+
+- Direct WhatsApp Chat
+- Editable Business Number
+- CMS-controlled WhatsApp Settings
+- Welcome Message Templates
+- Business Hours
+- Future WhatsApp Business API Support
+
+---
+
+## 🔒 Security Features
+
+- Password Encryption
+- Secure Authentication
+- Role-Based Access Control
+- Protected Admin Routes
+- Secure Customer Accounts
+- Secure Staff Accounts
+- Session Management
+
+---
+
+## 📱 Responsive Design
+
+The website is fully responsive and optimized for:
+
+- Desktop
+- Laptop
+- Tablet
+- Mobile Devices
+
+---
+
+# 🛠 Technologies Used
+
+### Frontend
+
+- HTML5
+- CSS3
+- JavaScript
+- TypeScript
+- React
+
+### Backend
+
+- Supabase
+
+### Database
+
+- PostgreSQL (Supabase)
+
+### Authentication
+
+- Supabase Authentication
+
+### AI
+
+- Integrated AI Shopping Assistant (Akosua)
+
+### Content Management
+
+- Custom CMS
+
+### Version Control
+
+- Git
+- GitHub
+
+---
+
+# 📂 Current Modules
+
+- Homepage
+- Shop
+- Categories
+- Product Details
+- Shopping Cart
+- Authentication
+- Customer Dashboard
+- Admin Dashboard
+- CMS
+- Orders
+- Customers
+- Staff
+- AI Assistant
+- Analytics
+- WhatsApp Integration
+
+---
+
+# 🎯 Upcoming Features
+
+The following features are currently under development:
+
+- SMS OTP Authentication
+- Online Payment Gateway
+- Delivery Tracking
+- AI Conversation Management
+- Customer Wishlist Improvements
+- AI Product Recommendations
+- Inventory Notifications
+- Advanced Reports
+- Customer Loyalty System
+- Discount & Coupon System
+- Invoice Generation
+- Email & SMS Notifications
+- Multi-location Delivery Support
+
+---
+
+# 📈 Project Status
+
+🟢 Active Development
+
+The project is continuously being improved with new features, enhanced security, better user experience, and advanced administration tools.
+
+---
+
+# 🎓 Educational Purpose
+
+Brown's Local Food Market is also being developed as part of a Web Design and Development course project while following modern software engineering principles and best practices.
+
+---
+
+# 👨‍💻 Developers
+
+- Gideon Odum-Boateng
+- Aniagyaa Amoako Mary
+
+---
+
+# 📄 License
+
+This project is currently intended for educational and portfolio purposes.
+
+---
+
+## ⭐ Future Vision
+
+Brown's Local Food Market aims to become a complete digital marketplace connecting Ghanaian farmers, local food vendors, and customers through a modern, intelligent, and secure e-commerce platform.
