@@ -27,6 +27,19 @@ export const lookupEmailByPhone = createServerFn({ method: "POST" })
     return { email: userRes.user.email ?? null };
   });
 
+/** Check whether an account (by email) is suspended. Called after failed login to explain why. */
+export const checkAccountSuspension = createServerFn({ method: "POST" })
+  .inputValidator((input) => z.object({ email: z.string().email() }).parse(input))
+  .handler(async ({ data }): Promise<{ suspended: boolean }> => {
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { data: usersList } = await supabaseAdmin.auth.admin.listUsers({ perPage: 1000 });
+    const u = (usersList?.users ?? []).find((x) => x.email?.toLowerCase() === data.email.toLowerCase());
+    if (!u) return { suspended: false };
+    if ((u as { banned_until?: string }).banned_until) return { suspended: true };
+    const { data: profile } = await supabaseAdmin.from("profiles").select("deleted_at").eq("id", u.id).maybeSingle();
+    return { suspended: !!profile?.deleted_at };
+  });
+
 /** Public: check whether a phone is already registered (for signup pre-check). */
 export const phoneAlreadyRegistered = createServerFn({ method: "POST" })
   .inputValidator((input) => z.object({ phone: z.string().min(3).max(32) }).parse(input))
