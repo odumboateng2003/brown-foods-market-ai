@@ -11,7 +11,7 @@ import { AuthCloseButton } from "@/components/auth-close-button";
 import { toast } from "sonner";
 import { useAuth } from "@/hooks/use-auth";
 import { useRoles } from "@/hooks/use-role";
-import { lookupEmailByPhone, phoneAlreadyRegistered } from "@/lib/auth.functions";
+import { lookupEmailByPhone, phoneAlreadyRegistered, checkAccountSuspension } from "@/lib/auth.functions";
 import { looksLikeEmail, normalizeGhanaPhone, syntheticEmailForPhone } from "@/lib/phone";
 
 export const Route = createFileRoute("/login")({
@@ -25,6 +25,7 @@ function LoginPage() {
   const { isAdmin, loading: rolesLoading } = useRoles();
   const lookupEmail = useServerFn(lookupEmailByPhone);
   const checkPhone = useServerFn(phoneAlreadyRegistered);
+  const checkSuspended = useServerFn(checkAccountSuspension);
 
   const [mode, setMode] = useState<"signin" | "signup">("signin");
   // Sign in fields
@@ -143,7 +144,15 @@ function LoginPage() {
           password,
         });
         if (error) {
-          if (/confirm/i.test(error.message) || /verified/i.test(error.message)) {
+          // Check if the account is suspended so we can show the right message.
+          let suspended = false;
+          try {
+            const res = await checkSuspended({ data: { email: loginEmail } });
+            suspended = res.suspended;
+          } catch { /* ignore */ }
+          if (suspended || /banned|suspend/i.test(error.message)) {
+            toast.error("Your account has been suspended. Please contact Brown's Local Food Market Customer Support for assistance.");
+          } else if (/confirm/i.test(error.message) || /verified/i.test(error.message)) {
             toast.error("Please verify your email first. Check your inbox for the confirmation link.");
           } else {
             toast.error("Invalid credentials. Please check and try again.");
