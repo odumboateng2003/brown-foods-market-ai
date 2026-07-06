@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { formatGHS } from "@/lib/format";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
+import { useCustomerStatus, SUSPENDED_MESSAGE } from "@/hooks/use-customer-status";
 import { toast } from "sonner";
 import { useNavigate } from "@tanstack/react-router";
 import { StockBadge } from "@/components/stock-badge";
@@ -20,6 +21,7 @@ export type Product = {
 
 export function ProductCard({ product }: { product: Product }) {
   const { user } = useAuth();
+  const { suspended } = useCustomerStatus();
   const navigate = useNavigate();
   const outOfStock = (product.stock ?? 0) <= 0;
 
@@ -31,6 +33,10 @@ export function ProductCard({ product }: { product: Product }) {
     if (!user) {
       toast("Sign in to add items to your cart");
       navigate({ to: "/login" });
+      return;
+    }
+    if (suspended) {
+      toast.error(SUSPENDED_MESSAGE);
       return;
     }
     const { data: existing } = await supabase
