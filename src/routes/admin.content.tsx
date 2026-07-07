@@ -25,6 +25,7 @@ export const Route = createFileRoute("/admin/content")({
 
 const TABS: { key: ContentKey; label: string }[] = [
   { key: "home_hero", label: "Homepage" },
+  { key: "home_features", label: "Home Features" },
   { key: "about", label: "About" },
   { key: "contact", label: "Contact" },
   { key: "privacy", label: "Privacy" },
