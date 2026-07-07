@@ -120,9 +120,19 @@ export type HomeMediaContent = {
   promo_tile_images: string[]; // up to 6 image URLs replacing emoji tiles
 };
 
+export type HomeFeatureItem = {
+  icon: string;      // one of: truck, shield, sparkles, leaf, utensils, wheat, fish, flame, star
+  title: string;
+  description: string;
+  visible: boolean;
+  sort_order: number;
+};
+export type HomeFeaturesContent = { items: HomeFeatureItem[] };
+
 export type ContentMap = {
   home_hero: HomeHero;
   home_media: HomeMediaContent;
+  home_features: HomeFeaturesContent;
   about: AboutContent;
   contact: ContactContent;
   privacy: LongPage;
@@ -155,6 +165,13 @@ export const DEFAULT_CONTENT: ContentMap = {
       "Sign up today and we'll deliver your first basket of fresh foodstuffs anywhere in Greater Accra — on the house.",
     promo_cta: "Create your account",
     promo_tile_images: [],
+  },
+  home_features: {
+    items: [
+      { icon: "truck", title: "Same-day delivery in Koforidua", description: "Fast delivery throughout Koforidua and surrounding communities.", visible: true, sort_order: 0 },
+      { icon: "shield", title: "Trusted local farmers", description: "We partner directly with vetted Ghanaian farmers and producers.", visible: true, sort_order: 1 },
+      { icon: "sparkles", title: "Always fresh, always real", description: "Quality-checked every day. What you see is what arrives.", visible: true, sort_order: 2 },
+    ],
   },
   about: {
     title: "About BROWN Foods Market",

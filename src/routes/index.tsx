@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { ArrowRight, Truck, ShieldCheck, Sparkles, ImageIcon, Leaf, Utensils, Wheat, Fish, Flame } from "lucide-react";
+import { ArrowRight, Truck, ShieldCheck, Sparkles, ImageIcon, Leaf, Utensils, Wheat, Fish, Flame, Star, type LucideIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ProductCard, type Product } from "@/components/product-card";
 import { supabase } from "@/integrations/supabase/client";
@@ -11,11 +11,19 @@ export const Route = createFileRoute("/")({
   component: Home,
 });
 
+const ICON_MAP: Record<string, LucideIcon> = {
+  truck: Truck, shield: ShieldCheck, sparkles: Sparkles, leaf: Leaf,
+  utensils: Utensils, wheat: Wheat, fish: Fish, flame: Flame, star: Star,
+};
+
 type Category = { id: string; name: string; slug: string; icon: string | null; image_url: string | null };
 
 function Home() {
   const hero = usePublishedOrDefault("home_hero");
   const media = usePublishedOrDefault("home_media");
+  const features = usePublishedOrDefault("home_features");
+  const business = usePublishedOrDefault("business_info");
+  const branding = usePublishedOrDefault("branding");
   const { data: categories } = useQuery({
     queryKey: ["categories"],
     queryFn: async () => {
@@ -69,16 +77,22 @@ function Home() {
               </Button>
             </div>
             <div className="mt-10 grid max-w-md grid-cols-3 gap-4 text-xs animate-fade-in animate-delay-300">
-              {[
-                { icon: Truck, label: "Same-day delivery in Accra" },
-                { icon: ShieldCheck, label: "Trusted local farmers" },
-                { icon: Sparkles, label: "Always fresh, always real" },
-              ].map((f) => (
-                <div key={f.label} className="flex flex-col items-start gap-1.5">
-                  <f.icon className="h-4 w-4 text-primary" />
-                  <span className="text-muted-foreground">{f.label}</span>
-                </div>
-              ))}
+              {features.items
+                .filter((f) => f.visible)
+                .sort((a, b) => a.sort_order - b.sort_order)
+                .slice(0, 3)
+                .map((f) => {
+                  const Icon = ICON_MAP[f.icon] ?? Sparkles;
+                  // Auto-swap {location} placeholder with the CMS business address city
+                  const cityFromAddress = (business.address || branding.business_address || "").split(",")[0]?.trim();
+                  const label = f.title.replace(/\{location\}/gi, cityFromAddress || "your area");
+                  return (
+                    <div key={f.title} className="flex flex-col items-start gap-1.5">
+                      <Icon className="h-4 w-4 text-primary" />
+                      <span className="text-muted-foreground">{label}</span>
+                    </div>
+                  );
+                })}
             </div>
           </div>
 

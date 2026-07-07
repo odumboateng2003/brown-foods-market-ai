@@ -4,9 +4,7 @@ import { convertToModelMessages, streamText, type UIMessage } from "ai";
 import { createLovableAiGatewayProvider } from "@/lib/ai-gateway";
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
 
-type ChatRequestBody = { messages?: unknown; userId?: string | null };
-
-type CmsRow = { key: string; published_content: unknown };
+type ChatRequestBody = { messages?: unknown; userId?: string | null; conversationId?: string | null };
 
 async function readCms(key: string): Promise<Record<string, unknown> | null> {
   const { data } = await supabaseAdmin
@@ -28,6 +26,7 @@ async function buildContext(userId: string | null) {
     about,
     branding,
     whatsapp,
+    aiSettingsRes,
   ] = await Promise.all([
     supabaseAdmin
       .from("products")
@@ -43,9 +42,11 @@ async function buildContext(userId: string | null) {
     readCms("about"),
     readCms("branding"),
     readCms("whatsapp"),
+    supabaseAdmin.from("ai_settings").select("*").eq("id", 1).maybeSingle(),
   ]);
 
   const businessName = (branding?.business_name as string) || (business?.name as string) || "Brown's Local Food Market";
+  const aiSettings = aiSettingsRes.data;
 
   const catalog =
     (productsRes.data ?? [])
@@ -92,13 +93,13 @@ async function buildContext(userId: string | null) {
   const whatsappNote = whatsapp?.phone_number ? `Customers can also reach us on WhatsApp at +${(whatsapp.phone_number as string).replace(/\D/g, "")}.` : "";
 
   let orderInfo = "";
+  let personalization = "";
   if (userId) {
-    const { data: orders } = await supabaseAdmin
-      .from("orders")
-      .select("id,status,payment_status,total_ghs,created_at")
-      .eq("user_id", userId)
-      .order("created_at", { ascending: false })
-      .limit(3);
+    const [ordersRes, profileRes] = await Promise.all([
+      supabaseAdmin.from("orders").select("id,status,payment_status,total_ghs,created_at").eq("user_id", userId).order("created_at", { ascending: false }).limit(5),
+      supabaseAdmin.from("profiles").select("full_name,city,region").eq("id", userId).maybeSingle(),
+    ]);
+    const orders = ordersRes.data;
     if (orders?.length) {
       orderInfo =
         "\n\nRecent orders for this customer:\n" +
@@ -109,13 +110,24 @@ async function buildContext(userId: string | null) {
           )
           .join("\n");
     }
+    const profile = profileRes.data as { full_name?: string | null; city?: string | null; region?: string | null } | null;
+    if (profile?.full_name) {
+      const firstName = profile.full_name.split(" ")[0];
+      personalization = `\n\nThe customer's name is ${firstName}. Greet them by name on the first reply of this session. Preferred delivery area: ${profile.city ?? profile.region ?? "unknown"}.`;
+    }
   }
 
-  return `You are Akosua, the friendly AI shopping assistant for ${businessName} — Ghana's modern marketplace for authentic foodstuffs. Always introduce yourself with: "Hello, I'm Akosua, your Browns Local Food Market assistant."
+  const personality = aiSettings?.personality ??
+    `You are Akosua, the friendly AI shopping assistant for ${businessName}.`;
+  const fallback = aiSettings?.fallback_response ?? "";
+  const hours = aiSettings?.business_hours ?? "";
 
-Tone: warm, helpful, concise. Simple English. You may sprinkle Akwaaba / Medaase sparingly.
+  return `${personality}
 
-Your knowledge below comes from the live Website Content CMS — treat it as the single source of truth and prefer it over anything from your training data. If a customer asks something not covered here, offer to connect them to a human on WhatsApp.
+Your knowledge below comes from the live Website Content CMS — treat it as the single source of truth and prefer it over anything from your training data. NEVER quote prices, stock, promotions, delivery fees or policies from prior conversation memory — always read them from the sections below. If a customer asks something not covered here, use this fallback: "${fallback}"
+
+Business hours: ${hours}
+${personalization}
 
 === ABOUT THE BUSINESS ===
 ${about?.intro ?? ""}
@@ -149,6 +161,12 @@ Rules:
 - If a question is outside food shopping and our business, politely redirect.`;
 }
 
+/** Extract plain text from a UIMessage (parts array). */
+function messageText(m: UIMessage): string {
+  const parts = (m as unknown as { parts?: { type: string; text?: string }[] }).parts ?? [];
+  return parts.filter((p) => p.type === "text" && typeof p.text === "string").map((p) => p.text).join("\n").slice(0, 4000);
+}
+
 export const Route = createFileRoute("/api/chat")({
   server: {
     handlers: {
@@ -160,23 +178,65 @@ export const Route = createFileRoute("/api/chat")({
         const key = process.env.LOVABLE_API_KEY;
         if (!key) return new Response("Missing LOVABLE_API_KEY", { status: 500 });
 
-        const system = await buildContext(body.userId ?? null);
+        // Kill switch
+        const { data: aiSettings } = await supabaseAdmin
+          .from("ai_settings").select("enabled,fallback_response").eq("id", 1).maybeSingle();
+        if (aiSettings && aiSettings.enabled === false) {
+          return new Response(aiSettings.fallback_response ?? "The AI assistant is temporarily disabled. Please try again later.", { status: 503 });
+        }
+
+        const userId = body.userId ?? null;
+        const messages = body.messages as UIMessage[];
+        const latest = messages[messages.length - 1];
+
+        // Persist the latest user message + conversation record (auth users only)
+        let conversationId = body.conversationId ?? null;
+        if (userId && latest && latest.role === "user") {
+          if (!conversationId) {
+            const { data: convo } = await supabaseAdmin
+              .from("ai_conversations")
+              .insert({ user_id: userId, title: messageText(latest).slice(0, 80) || "New chat" })
+              .select("id")
+              .single();
+            conversationId = convo?.id ?? null;
+          }
+          if (conversationId) {
+            await supabaseAdmin.from("ai_messages").insert({
+              conversation_id: conversationId,
+              user_id: userId,
+              role: "user",
+              parts: (latest as unknown as { parts: unknown }).parts as never,
+              text_content: messageText(latest),
+            });
+          }
+        }
+
+        const system = await buildContext(userId);
         const gateway = createLovableAiGatewayProvider(key);
         const model = gateway("google/gemini-3-flash-preview");
 
         const result = streamText({
           model,
           system,
-          messages: await convertToModelMessages(body.messages as UIMessage[]),
+          messages: await convertToModelMessages(messages),
+          onFinish: async ({ text }) => {
+            if (userId && conversationId && text) {
+              await supabaseAdmin.from("ai_messages").insert({
+                conversation_id: conversationId,
+                user_id: userId,
+                role: "assistant",
+                parts: [{ type: "text", text }] as never,
+                text_content: text.slice(0, 4000),
+              });
+            }
+          },
         });
 
         return result.toUIMessageStreamResponse({
-          originalMessages: body.messages as UIMessage[],
+          originalMessages: messages,
+          headers: conversationId ? { "x-conversation-id": conversationId } : undefined,
         });
       },
     },
   },
 });
-
-// suppress unused warning on the intermediate type when linters run
-export type _CmsRow = CmsRow;
