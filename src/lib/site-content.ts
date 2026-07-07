@@ -166,6 +166,13 @@ export const DEFAULT_CONTENT: ContentMap = {
     promo_cta: "Create your account",
     promo_tile_images: [],
   },
+  home_features: {
+    items: [
+      { icon: "truck", title: "Same-day delivery in Koforidua", description: "Fast delivery throughout Koforidua and surrounding communities.", visible: true, sort_order: 0 },
+      { icon: "shield", title: "Trusted local farmers", description: "We partner directly with vetted Ghanaian farmers and producers.", visible: true, sort_order: 1 },
+      { icon: "sparkles", title: "Always fresh, always real", description: "Quality-checked every day. What you see is what arrives.", visible: true, sort_order: 2 },
+    ],
+  },
   about: {
     title: "About BROWN Foods Market",
     intro:
