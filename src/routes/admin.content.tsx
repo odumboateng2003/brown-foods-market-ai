@@ -209,6 +209,55 @@ function EditorFields({
     );
   }
 
+
+  if (contentKey === "home_features") {
+    const v = value as ContentMap["home_features"];
+    const items = v.items ?? [];
+    const setItems = (next: typeof items) => set({ items: next });
+    return (
+      <div className="space-y-3">
+        <p className="text-xs text-muted-foreground">
+          These cards appear on the homepage hero. Use <code>{"{location}"}</code> in the title to auto-insert the business city from the Business tab.
+        </p>
+        {items.map((it, i) => (
+          <div key={i} className="rounded-lg border border-border p-3 space-y-2">
+            <div className="grid gap-2 sm:grid-cols-12">
+              <div className="sm:col-span-3">
+                <Label className="text-xs">Icon</Label>
+                <select
+                  value={it.icon}
+                  onChange={(e) => { const n = [...items]; n[i] = { ...it, icon: e.target.value }; setItems(n); }}
+                  className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                >
+                  {["truck","shield","sparkles","leaf","utensils","wheat","fish","flame","star"].map((k) => <option key={k} value={k}>{k}</option>)}
+                </select>
+              </div>
+              <div className="sm:col-span-7">
+                <Label className="text-xs">Title</Label>
+                <Input value={it.title} onChange={(e) => { const n = [...items]; n[i] = { ...it, title: e.target.value }; setItems(n); }} />
+              </div>
+              <div className="sm:col-span-2 flex items-end gap-2">
+                <label className="flex items-center gap-1 text-xs">
+                  <input type="checkbox" checked={it.visible} onChange={(e) => { const n = [...items]; n[i] = { ...it, visible: e.target.checked }; setItems(n); }} />
+                  Visible
+                </label>
+                <Button type="button" variant="ghost" size="icon" onClick={() => setItems(items.filter((_, j) => j !== i))}>
+                  <Trash2 className="h-4 w-4" />
+                </Button>
+              </div>
+            </div>
+            <Field label="Description">
+              <Textarea rows={2} value={it.description} onChange={(e) => { const n = [...items]; n[i] = { ...it, description: e.target.value }; setItems(n); }} />
+            </Field>
+          </div>
+        ))}
+        <Button type="button" variant="outline" size="sm" onClick={() => setItems([...items, { icon: "sparkles", title: "New feature", description: "", visible: true, sort_order: items.length }])}>
+          <Plus className="mr-1 h-4 w-4" /> Add feature
+        </Button>
+      </div>
+    );
+  }
+
   if (contentKey === "about") {
     const v = value as ContentMap["about"];
     return (
