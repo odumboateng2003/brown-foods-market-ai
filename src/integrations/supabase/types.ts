@@ -14,6 +14,104 @@ export type Database = {
   }
   public: {
     Tables: {
+      ai_conversations: {
+        Row: {
+          created_at: string
+          id: string
+          last_active_at: string
+          title: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          last_active_at?: string
+          title?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          last_active_at?: string
+          title?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      ai_messages: {
+        Row: {
+          conversation_id: string
+          created_at: string
+          id: string
+          parts: Json
+          role: string
+          text_content: string | null
+          user_id: string
+        }
+        Insert: {
+          conversation_id: string
+          created_at?: string
+          id?: string
+          parts?: Json
+          role: string
+          text_content?: string | null
+          user_id: string
+        }
+        Update: {
+          conversation_id?: string
+          created_at?: string
+          id?: string
+          parts?: Json
+          role?: string
+          text_content?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ai_messages_conversation_id_fkey"
+            columns: ["conversation_id"]
+            isOneToOne: false
+            referencedRelation: "ai_conversations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      ai_settings: {
+        Row: {
+          business_hours: string
+          enabled: boolean
+          fallback_response: string
+          greeting: string
+          id: number
+          personality: string
+          retention_days: number
+          suggested_prompts: Json
+          updated_at: string
+        }
+        Insert: {
+          business_hours?: string
+          enabled?: boolean
+          fallback_response?: string
+          greeting?: string
+          id?: number
+          personality?: string
+          retention_days?: number
+          suggested_prompts?: Json
+          updated_at?: string
+        }
+        Update: {
+          business_hours?: string
+          enabled?: boolean
+          fallback_response?: string
+          greeting?: string
+          id?: number
+          personality?: string
+          retention_days?: number
+          suggested_prompts?: Json
+          updated_at?: string
+        }
+        Relationships: []
+      }
       cart_items: {
         Row: {
           created_at: string
@@ -623,6 +721,24 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      ai_top_questions: {
+        Args: { _limit?: number }
+        Returns: {
+          count: number
+          question: string
+        }[]
+      }
+      ai_usage_stats: {
+        Args: never
+        Returns: {
+          msgs_30d: number
+          msgs_7d: number
+          msgs_today: number
+          total_conversations: number
+          total_users: number
+        }[]
+      }
+      cleanup_old_ai_conversations: { Args: never; Returns: number }
       generate_customer_code: {
         Args: { _created_at: string; _full_name: string }
         Returns: string
@@ -670,6 +786,26 @@ export type Database = {
       }
       is_admin_staff: { Args: { _user_id: string }; Returns: boolean }
       is_super_admin: { Args: { _user_id: string }; Returns: boolean }
+      update_ai_settings: {
+        Args: { _patch: Json }
+        Returns: {
+          business_hours: string
+          enabled: boolean
+          fallback_response: string
+          greeting: string
+          id: number
+          personality: string
+          retention_days: number
+          suggested_prompts: Json
+          updated_at: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "ai_settings"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
     }
     Enums: {
       app_role: "admin" | "staff" | "customer"
