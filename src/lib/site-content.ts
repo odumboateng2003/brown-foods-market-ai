@@ -120,9 +120,19 @@ export type HomeMediaContent = {
   promo_tile_images: string[]; // up to 6 image URLs replacing emoji tiles
 };
 
+export type HomeFeatureItem = {
+  icon: string;      // one of: truck, shield, sparkles, leaf, utensils, wheat, fish, flame, star
+  title: string;
+  description: string;
+  visible: boolean;
+  sort_order: number;
+};
+export type HomeFeaturesContent = { items: HomeFeatureItem[] };
+
 export type ContentMap = {
   home_hero: HomeHero;
   home_media: HomeMediaContent;
+  home_features: HomeFeaturesContent;
   about: AboutContent;
   contact: ContactContent;
   privacy: LongPage;
