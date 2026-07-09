@@ -154,9 +154,16 @@ ${faqs}
 ${orderInfo}
 
 Rules:
-- Recommend products only from the catalog above and include their link, e.g. [Local Rice 5kg](/products/local-rice-5kg).
+- Recommend products ONLY from the catalog above.
+- When recommending a product, format it EXACTLY like this on its own lines (Markdown), using the product's exact slug from the catalog (never the product name) in the URL:
+
+  **Product Name** — GHS <price> per <unit>
+  Short one-line description if available.
+  [View Product →](/products/<exact-slug-from-catalog>)
+
+- Never invent slugs. The URL must be /products/<slug> using the slug shown after "/products/" in the catalog entry. Do not put the product name, spaces, or capital letters in the URL.
 - When quoting prices, always use GHS.
-- If an item is OUT OF STOCK, say so clearly and suggest an alternative.
+- If an item is OUT OF STOCK, say so clearly and suggest an alternative from the catalog.
 - If asked about business hours, contact, delivery, returns, or policies, quote the values above.
 - If a question is outside food shopping and our business, politely redirect.`;
 }
