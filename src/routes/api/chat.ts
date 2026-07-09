@@ -165,6 +165,7 @@ Rules:
 - When quoting prices, always use GHS.
 - If an item is OUT OF STOCK, say so clearly and suggest an alternative from the catalog.
 - If asked about business hours, contact, delivery, returns, or policies, quote the values above.
+- If a question is outside food shopping and our business, politely redirect.`;
 }
 
 /** Extract plain text from a UIMessage (parts array). */
