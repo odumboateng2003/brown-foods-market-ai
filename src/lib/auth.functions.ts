@@ -54,3 +54,93 @@ export const phoneAlreadyRegistered = createServerFn({ method: "POST" })
       .maybeSingle();
     return { exists: !!profile };
   });
+
+/**
+ * Customer password reset by phone number.
+ *
+ * Security posture (interim, pre-SMS-OTP):
+ * - Only resets accounts that are pure customers (no staff/admin role).
+ * - Refuses suspended accounts (banned_until set or profiles.deleted_at set).
+ * - Password is hashed by Supabase Auth; never stored or returned.
+ * - Structured so an OTP-verification step can be inserted before the
+ *   password write without changing the client contract.
+ */
+export const resetCustomerPasswordByPhone = createServerFn({ method: "POST" })
+  .inputValidator((input) =>
+    z
+      .object({
+        phone: z.string().min(3).max(32),
+        newPassword: z.string().min(8).max(128),
+      })
+      .parse(input),
+  )
+  .handler(
+    async ({
+      data,
+    }): Promise<
+      | { ok: true }
+      | { ok: false; code: "not_found" | "suspended" | "staff" | "weak" | "error"; message: string }
+    > => {
+      const canonical = normalizeGhanaPhone(data.phone);
+      if (!canonical) {
+        return { ok: false, code: "not_found", message: "Phone number not found." };
+      }
+      if (data.newPassword.length < 8) {
+        return { ok: false, code: "weak", message: "Password must be at least 8 characters." };
+      }
+      const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+
+      const { data: profile } = await supabaseAdmin
+        .from("profiles")
+        .select("id, deleted_at")
+        .eq("phone", canonical)
+        .maybeSingle();
+      if (!profile) {
+        return { ok: false, code: "not_found", message: "Phone number not found." };
+      }
+      if (profile.deleted_at) {
+        return {
+          ok: false,
+          code: "suspended",
+          message:
+            "This account has been suspended. Please contact Brown's Local Food Market Customer Support for assistance.",
+        };
+      }
+
+      // Block staff/admin accounts — they use email-based reset.
+      const { data: roles } = await supabaseAdmin
+        .from("user_roles")
+        .select("role")
+        .eq("user_id", profile.id);
+      if ((roles ?? []).some((r) => r.role === "admin" || r.role === "staff")) {
+        return {
+          ok: false,
+          code: "staff",
+          message: "Staff accounts must reset their password via email. Contact an administrator.",
+        };
+      }
+
+      // Confirm the auth user exists and isn't banned.
+      const { data: userRes, error: userErr } = await supabaseAdmin.auth.admin.getUserById(profile.id);
+      if (userErr || !userRes?.user) {
+        return { ok: false, code: "not_found", message: "Phone number not found." };
+      }
+      if ((userRes.user as { banned_until?: string }).banned_until) {
+        return {
+          ok: false,
+          code: "suspended",
+          message:
+            "This account has been suspended. Please contact Brown's Local Food Market Customer Support for assistance.",
+        };
+      }
+
+      // TODO(SMS-OTP): verify a prior OTP challenge here before updating the password.
+      const { error: updateErr } = await supabaseAdmin.auth.admin.updateUserById(profile.id, {
+        password: data.newPassword,
+      });
+      if (updateErr) {
+        return { ok: false, code: "error", message: "Could not update password. Please try again." };
+      }
+      return { ok: true };
+    },
+  );
