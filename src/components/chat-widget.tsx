@@ -47,14 +47,39 @@ export function ChatWidget() {
     enabled: !!user,
   });
 
+  // Refs so the transport (created once) always sees the current values
+  const userIdRef = useRef<string | null>(user?.id ?? null);
+  const conversationIdRef = useRef<string | null>(null);
+  useEffect(() => { userIdRef.current = user?.id ?? null; }, [user?.id]);
+  useEffect(() => { conversationIdRef.current = conversationId; }, [conversationId]);
+
   const transport = useRef(
     new DefaultChatTransport({
       api: "/api/chat",
-      body: () => ({ userId: user?.id ?? null, conversationId }),
+      body: () => ({
+        userId: userIdRef.current,
+        conversationId: conversationIdRef.current,
+      }),
+      fetch: async (url, init) => {
+        const res = await fetch(url as string, init);
+        const cid = res.headers.get("x-conversation-id");
+        if (cid && !conversationIdRef.current) {
+          conversationIdRef.current = cid;
+          setConversationId(cid);
+        }
+        return res;
+      },
     }),
   ).current;
 
-  const { messages, sendMessage, setMessages, status } = useChat({ transport });
+  const { messages, sendMessage, setMessages, status } = useChat({
+    transport,
+    onFinish: () => {
+      if (userIdRef.current) {
+        void qc.invalidateQueries({ queryKey: ["ai", "conversations"] });
+      }
+    },
+  });
 
   // -------- GUEST: sessionStorage persistence for this browser tab only --------
   useEffect(() => {
