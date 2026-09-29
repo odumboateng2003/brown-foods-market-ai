@@ -1,5 +1,5 @@
 import { Link, useNavigate } from "@tanstack/react-router";
-import { ShoppingCart, Search, User as UserIcon, LogOut, Menu, Package, LayoutDashboard } from "lucide-react";
+import { ShoppingCart, Search, User as UserIcon, LogOut, Menu, Package, LayoutDashboard, X } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -23,6 +23,7 @@ export function SiteHeader() {
   const navigate = useNavigate();
   const [q, setQ] = useState("");
   const [count, setCount] = useState(0);
+  const [mobileOpen, setMobileOpen] = useState(false);
 
   useEffect(() => {
     if (!user) {
@@ -52,6 +53,7 @@ export function SiteHeader() {
 
   const onSearch = (e: React.FormEvent) => {
     e.preventDefault();
+    setMobileOpen(false);
     navigate({ to: "/shop", search: { q: q || undefined } as never });
   };
 
@@ -104,6 +106,10 @@ export function SiteHeader() {
           <Link to="/contact" className="hidden rounded-md px-3 py-2 text-sm font-semibold uppercase tracking-wider text-foreground/80 hover:text-primary lg:inline-block">
             Contact
           </Link>
+
+          <Button variant="ghost" size="icon" className="md:hidden" aria-label="Search products" onClick={() => setMobileOpen((v) => !v)}>
+            <Search className="h-5 w-5" />
+          </Button>
 
           <Button asChild variant="ghost" size="icon" className="relative">
             <Link to="/cart" aria-label="Cart">
@@ -171,6 +177,26 @@ export function SiteHeader() {
           </Button>
         </nav>
       </div>
+      {mobileOpen && (
+        <div className="border-t border-border/60 px-4 py-3 md:hidden">
+          <form onSubmit={onSearch} className="flex items-center gap-2">
+            <div className="relative min-w-0 flex-1">
+              <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+              <Input
+                autoFocus
+                type="search"
+                value={q}
+                onChange={(e) => setQ(e.target.value)}
+                placeholder="Search products…"
+                className="h-11 w-full rounded-full border-border bg-secondary/60 pl-10 text-base"
+              />
+            </div>
+            <Button type="button" variant="ghost" size="icon" className="h-11 w-11 shrink-0" aria-label="Close search" onClick={() => setMobileOpen(false)}>
+              <X className="h-5 w-5" />
+            </Button>
+          </form>
+        </div>
+      )}
     </header>
   );
 }
